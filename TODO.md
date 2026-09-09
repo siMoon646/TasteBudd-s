@@ -1,4 +1,10 @@
 # TODO
+
+## Draft UI Designs:
+- [ ] Landing/Login Page
+- [ ] Navbar
+- [ ] Pinterest Style x Tinder Feed
+- [ ] Profile Page
  
 ## Modular Posts
 - [ ] Frontend
