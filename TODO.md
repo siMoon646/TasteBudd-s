@@ -47,7 +47,8 @@
 ## Infrastructure
 - [ ] database setup (PostgreSQL/Supabase + Prisma schema)
 - [ ] hosting/deployment (TBD)
-- [ ] repo setup (Git/GitHub org)
+- [x] repo setup (Git/GitHub org)
+- [x] VITE + React Framework Initialization
 
 ## Polish (MDP-stage) -- make fancier
 - [ ] UI animation pass (composer + feed)
