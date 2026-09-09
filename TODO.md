@@ -48,7 +48,8 @@
 - [ ] database setup (PostgreSQL/Supabase + Prisma schema)
 - [ ] hosting/deployment (TBD)
 - [x] repo setup (Git/GitHub org)
-- [x] VITE + React Framework Initialization
+- [x] VITE + React frontend skeleton
+- [x] Node.js + Express backend skeleton
 
 ## Polish (MDP-stage) -- make fancier
 - [ ] UI animation pass (composer + feed)
