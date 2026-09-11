@@ -24,6 +24,7 @@ Posts can also carry an optional location tag, powering a dedicated **location-b
 
 **Backend**
 - Node.js
+- Express (web framework)
 
 **Database**
 - Supabase (hosted Postgres)
