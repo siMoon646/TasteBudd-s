@@ -5,6 +5,9 @@
 - [ ] Navbar
 - [ ] Pinterest Style x Tinder Feed
 - [ ] Profile Page
+
+## Documentation
+- [ ] Update inspiration section on README.md
  
 ## Modular Posts
 - [ ] Frontend
