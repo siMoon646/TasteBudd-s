@@ -11,50 +11,50 @@
  
 ## Modular Posts
 - [ ] Frontend
-  - [ ] checklist UI
-  - [ ] video module UI
-  - [ ] timer module UI
-  - [ ] image module UI
-  - [ ] text module UI
-  - [ ] location module UI
-  - [ ] rating module UI
+  - [ ] Checklist UI
+  - [ ] Video module UI
+  - [ ] Timer module UI
+  - [ ] Image module UI
+  - [ ] Text module UI
+  - [ ] Location module UI
+  - [ ] Rating module UI
 - [ ] Backend
-  - [ ] checklist module (schema + API)
-  - [ ] video module (schema + API)
-  - [ ] timer module (schema + API)
-  - [ ] image module (schema + API)
-  - [ ] text module (schema + API)
-  - [ ] location module (schema + API)
-  - [ ] rating module (schema + API)
+  - [ ] Checklist module (schema + API)
+  - [ ] Video module (schema + API)
+  - [ ] Timer module (schema + API)
+  - [ ] Image module (schema + API)
+  - [ ] Text module (schema + API)
+  - [ ] Location module (schema + API)
+  - [ ] Rating module (schema + API)
   
 ## Feed
 - [ ] Default feed
-  - [ ] engagement-weighted scoring (likes / comments / saves / follows-from-post)
-  - [ ] feed endpoint + pagination
+  - [ ] Engagement-weighted scoring (likes / comments / saves / follows-from-post)
+  - [ ] Feed endpoint + pagination
 - [ ] Proximity feed
-  - [ ] recency filter
+  - [ ] Recency filter
   - [ ] Haversine distance filter
-  - [ ] popularity sort
-  - [ ] browser geolocation permission flow
+  - [ ] Popularity sort
+  - [ ] Browser geolocation permission flow
   
 ## Accounts & Auth
-- [ ] decide auth provider (Better Auth vs Supabase Auth)
-- [ ] sign up / login
-- [ ] session handling
+- [ ] Decide auth provider (Better Auth vs Supabase Auth)
+- [ ] Sign up / login
+- [ ] Session handling
 
 ## Moderation
-- [ ] report/flag post action
-- [ ] moderation queue (admin dashboard)
-- [ ] moderation action logging
+- [ ] Report/flag post action
+- [ ] Moderation queue (admin dashboard)
+- [ ] Moderation action logging
 
 ## Infrastructure
-- [ ] database setup (PostgreSQL/Supabase + Prisma schema)
-- [ ] hosting/deployment (TBD)
-- [x] repo setup (Git/GitHub org)
+- [ ] Database setup (PostgreSQL/Supabase + Prisma schema)
+- [ ] Hosting/deployment (TBD)
+- [x] Repo setup (Git/GitHub org)
 - [x] VITE + React frontend skeleton
 - [x] Node.js + Express backend skeleton
 
 ## Polish (MDP-stage) -- make fancier
 - [ ] UI animation pass (composer + feed)
 - [ ] UI color theming
-- [ ] load time optimization
+- [ ] Load time optimization
