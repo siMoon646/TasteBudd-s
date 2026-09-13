@@ -34,3 +34,4 @@ lerna-debug.log*
 Thumbs.db
 
 *.local
+node_modules/
