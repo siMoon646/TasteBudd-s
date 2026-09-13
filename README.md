@@ -53,6 +53,8 @@ Posts can also carry an optional location tag, powering a dedicated **location-b
 
 - **Reads & real-time subscriptions** (e.g. live comment updates) go directly from the frontend to Supabase.
 
+- **Denormalized counters must stay in sync with their source rows.** `Post.likeCount`/`dislikeCount`/`saveCount`/`commentCount` and `Comment.likeCount`/`dislikeCount` are caches, not sources of truth — the `Reaction` and `Comment` tables are. Every code path that creates or deletes a `Reaction` (or a `Comment`, for `commentCount`) must update the matching counter in the same `prisma.$transaction`, so the two can never partially apply. Skipping this on any write path — including future ones — lets the cached count silently drift from reality.
+
 ## Status
 
 Early scaffold — backend is a bare Node/Express server, frontend is a stock Vite + React setup. Nothing is wired together yet. Bones so bare fr.
