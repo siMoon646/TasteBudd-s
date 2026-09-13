@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Enums ---------------------------------------------------------------
+
+enum ModuleType {
+  text
+  checklist
+  numbered_list
+  video
+  location
+  timer
+}
+
+enum ReactionType {
+  like
+  dislike
+  save
+  follow
+}
+
+// --- Models ----------------------------------------------------------------
+
+model User {
+  id          String      @id @default(uuid())
+  username    String      @unique
+  description String?
+  posts       Post[]
+  comments    Comment[]
+  reactions   Reaction[]  @relation("ReactionAuthor")
+  followedBy  Reaction[]  @relation("ReactionTargetUser")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Post {
+  id        String       @id @default(uuid())
+  userId    String       @map("user_id")
+  user      User         @relation(fields: [userId], references: [id])
+
+  // Caption is optional content, not a required title — empty string allowed.
+  caption   String       @default("") // caption or image required. Validated at app layer, not enforced by the DB.
+  images    String[]     @default([]) // caption or image required. Validated at app layer, not enforced by the DB.
+
+  // Denormalized counts, mirrored from Reaction/Comment rows. Ground truth is
+  // always the Reaction/Comment tables — see README Architecture Notes for
+  // the rule on keeping these in sync.
+  likeCount    Int @default(0) @map("like_count")
+  dislikeCount Int @default(0) @map("dislike_count")
+  saveCount    Int @default(0) @map("save_count")
+  commentCount Int @default(0) @map("comment_count")
+
+  modules   PostModule[]
+  comments  Comment[]
+  reactions Reaction[]
+
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  @@map("posts")
+}
+
+model PostModule {
+  id         String     @id @default(uuid())
+
+  postId     String     @map("post_id")
+  post       Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  moduleType ModuleType @map("module_type")
+
+  // Float position supports easy reordering (e.g. inserting at 1.5
+  // between position 1 and 2) without renumbering every other row.
+  position   Float
+
+  // Shape of `data` depends on moduleType — validated at the app layer
+  // (e.g. with Zod) before writes, not enforced by the DB. Shapes:
+  //
+  //   text:           { body: string }
+  //   checklist:      { items: [{ id, text, checked }] }
+  //   numbered_list:  { items: [{ id, text }] }
+  //   video:          { video_id: string }                         // YouTube only (MVP)
+  //   location:       { address?, longitude, latitude, label }
+  //   timer:          { hours: 0-99, minutes: 0-59, label? }
+  data       Json
+
+  @@index([postId, position])
+  @@map("post_modules")
+}
+
+model Comment {
+  id        String     @id @default(uuid())
+  userId    String     @map("user_id")
+  user      User       @relation(fields: [userId], references: [id])
+  postId    String     @map("post_id")
+  post      Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  // text or image is required. Validated at app layer, not enforced by the DB.
+  text      String?
+  image     String?
+
+  // Denormalized counts, mirrored from Reaction rows of the matching type —
+  // see README Architecture Notes for the rule on keeping these in sync.
+  likeCount    Int @default(0) @map("like_count")
+  dislikeCount Int @default(0) @map("dislike_count")
+
+  reactions Reaction[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  @@index([postId])
+  @@map("comments")
+}
+
+model Reaction {
+  id           String       @id @default(uuid())
+  userId       String       @map("user_id")
+  user         User         @relation("ReactionAuthor", fields: [userId], references: [id]) // Author of the reaction
+  type         ReactionType
+  // Exactly one of postId/commentId/targetUserId is set per row — validated at the app layer, same as PostModule.data.
+  postId       String?      @map("post_id")
+  post         Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  commentId    String?      @map("comment_id")
+  comment      Comment?     @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  // Set only when type is "follow" — the user being followed.
+  targetUserId String?      @map("target_user_id")
+  targetUser   User?        @relation("ReactionTargetUser", fields: [targetUserId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  // Each is its own uniqueness check so a user can independently like AND
+  // save the same post — only doubling up on the same type is blocked.
+  @@unique([userId, postId, type]) // for interactions with posts; likes, dislikes, saves.
+  @@unique([userId, commentId, type]) // for interactions with comments; likes, dislikes.
+  // making sure users cannot follow the same user multiple times.
+  @@unique([userId, targetUserId, type]) // for interactions with users; follows.
+
+  // Speeds up "count/list reactions on this post/comment" queries, which
+  // filter by postId/commentId rather than userId (the leading column on
+  // the unique indexes above).
+  @@index([postId, type])
+  @@index([commentId, type])
+  @@map("reactions")
+}
