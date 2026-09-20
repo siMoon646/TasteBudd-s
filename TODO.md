@@ -27,6 +27,7 @@
   - [ ] Location module (schema + API)
   - [ ] Rating module (schema + API)
   
+
 ## Feed
 - [ ] Default feed
   - [ ] Engagement-weighted scoring (likes / comments / saves / follows-from-post)
@@ -48,11 +49,37 @@
 - [ ] Moderation action logging
 
 ## Infrastructure
-- [ ] Database setup (PostgreSQL/Supabase + Prisma schema)
+- [x] Draft initial Prisma schema (User, Post, PostModule, Comment, Reaction)
+- [ ] Provision Supabase Postgres instance + wire `DATABASE_URL`
+- [ ] Install Prisma Client + run initial migration
 - [ ] Hosting/deployment (TBD)
 - [x] Repo setup (Git/GitHub org)
 - [x] VITE + React frontend skeleton
 - [x] Node.js + Express backend skeleton
+
+## Core API — Users, Posts, Comments, Reactions
+_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; none of this is implemented yet — `server.js` is still empty)_
+- [ ] User
+  - [ ] Create (signup, tied to Accounts & Auth below)
+  - [ ] Read profile
+  - [ ] Update profile (`username`, `description`)
+  - [ ] Delete — server-orchestrated cascade per README Architecture Notes (posts → reactions incl. saves/follows → comments, with counter decrements)
+- [ ] Post
+  - [ ] Create (caption/images + attached `PostModule[]`)
+  - [ ] Read (single post + list/feed queries)
+  - [ ] Update (caption/images/modules)
+  - [ ] Delete (relies on schema-level `onDelete: Cascade` for modules/comments/reactions)
+- [ ] Comment
+  - [ ] Create (+ increment `Post.commentCount` in the same transaction)
+  - [ ] Read (by post)
+  - [ ] Delete (+ decrement `Post.commentCount` in the same transaction)
+- [ ] Reaction
+  - [ ] Create — like/dislike/save on a post or comment (+ increment matching counter transactionally)
+  - [ ] Create — follow on a user
+  - [ ] Delete/toggle (+ decrement matching counter transactionally)
+- [ ] Cross-cutting
+  - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
+  - [ ] User-deletion orchestration function (ordered cascade described above, idempotent/retry-safe)
 
 ## Polish (MDP-stage) -- make fancier
 - [ ] UI animation pass (composer + feed)

@@ -112,6 +112,7 @@ model Comment {
 
   reactions Reaction[]
   createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
   @@index([postId])
   @@map("comments")
 }
@@ -130,6 +131,7 @@ model Reaction {
   targetUserId String?      @map("target_user_id")
   targetUser   User?        @relation("ReactionTargetUser", fields: [targetUserId], references: [id], onDelete: Cascade)
   createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
 
   // Each is its own uniqueness check so a user can independently like AND
   // save the same post — only doubling up on the same type is blocked.
