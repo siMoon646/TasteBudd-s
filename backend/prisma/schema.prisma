@@ -28,6 +28,9 @@ enum ReactionType {
 // --- Models ----------------------------------------------------------------
 
 model User {
+  // Self-generated for now. If/when an auth provider is picked (see TODO.md),
+  // this should likely become — or be joined to — that provider's user id
+  // instead of a separately generated uuid.
   id          String      @id @default(uuid())
   username    String      @unique
   description String?
@@ -37,6 +40,7 @@ model User {
   followedBy  Reaction[]  @relation("ReactionTargetUser")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
+  deletedAt   DateTime?   @map("deleted_at")
 
   @@map("users")
 }
@@ -65,6 +69,7 @@ model Post {
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
+  @@index([userId])
   @@map("posts")
 }
 
@@ -91,7 +96,12 @@ model PostModule {
   //   timer:          { hours: 0-99, minutes: 0-59, label? }
   data       Json
 
-  @@index([postId, position])
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  // Also serves lookups/ordering by [postId, position] — a unique index
+  // covers that leftmost prefix, so a separate @@index would be redundant.
+  @@unique([postId, position])
   @@map("post_modules")
 }
 
@@ -112,6 +122,8 @@ model Comment {
 
   reactions Reaction[]
   createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  
   @@index([postId])
   @@map("comments")
 }
@@ -143,5 +155,6 @@ model Reaction {
   // the unique indexes above).
   @@index([postId, type])
   @@index([commentId, type])
+  @@index([targetUserId, type])
   @@map("reactions")
 }
