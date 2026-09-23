@@ -63,7 +63,7 @@ _(tracks backend functionality against the models already defined in `backend/pr
   - [ ] Create (signup, tied to Accounts & Auth below)
   - [ ] Read profile
   - [ ] Update profile (`username`, `description`)
-  - [ ] Delete — server-orchestrated cascade per README Architecture Notes (posts → reactions incl. saves/follows → comments, with counter decrements)
+  - _Delete is post-MVP — see [Post-MVP](#post-mvp) below._
 - [ ] Post
   - [ ] Create (caption/images + attached `PostModule[]`)
   - [ ] Read (single post + list/feed queries)
@@ -79,7 +79,12 @@ _(tracks backend functionality against the models already defined in `backend/pr
   - [ ] Delete/toggle (+ decrement matching counter transactionally)
 - [ ] Cross-cutting
   - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
-  - [ ] User-deletion orchestration function (ordered cascade described above, idempotent/retry-safe)
+
+## Post-MVP
+- [ ] Account deletion — hard delete, no soft deletion. Until built, the schema's `Restrict` rules block any user delete. See README Architecture Notes.
+  - [ ] User-deletion orchestration function, in one `prisma.$transaction`: delete the user's posts (cascade clears their modules/comments/reactions) → decrement `commentCount` for the user's comments on others' posts, then delete them → decrement counts for the user's reactions on others' posts/comments, then delete them (incl. follows) → delete the user (follows *of* them cascade)
+  - [ ] After commit: delete the auth provider account and the user's Cloudinary images (idempotent/retry-safe)
+  - [ ] Confirmation step in the UI (deletion is permanent)
 
 ## Polish (MDP-stage) -- make fancier
 - [ ] UI animation pass (composer + feed)
