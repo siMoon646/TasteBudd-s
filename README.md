@@ -36,7 +36,7 @@ Later on (post-MVP), posts will also be able to carry an optional location tag, 
 
 **Frontend**
 - Vite + React
-- Tailwind CSS
+- Tailwind CSS (?)
 
 **Auth**
 - Supabase Auth
@@ -90,6 +90,7 @@ npm run dev        # Vite dev server, prints the local URL
 - [Data Dictionary](docs/DATA_DICTIONARY.md): every table, column, enum, and constraint
 - [TODO](docs/TODO.md): roadmap and task tracking
 - [Project Board](docs/PROJECT_BOARD.md): progress log
+- [AI Usage](docs/AI_USAGE.md): where and how AI assistance was used
 
 ## Status
 
