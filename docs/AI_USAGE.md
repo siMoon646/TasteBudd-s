@@ -4,7 +4,7 @@ Today's work was done with AI assistance: Claude (Anthropic), used through Claud
 ## Tool
 - Claude Code
 
-What the AI did:
+### What the AI did:
 - **Backend scaffold:** created stub files in `routes/`, `controllers/`, `services/`, and `middleware/` with function signatures and comments only.
 - **Schema:** added the `body_image` module type at the team's request and updated comments. No other structural changes.
 - **Docs:**
