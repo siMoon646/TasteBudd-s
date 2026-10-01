@@ -70,7 +70,7 @@ One row per account.
 
 | Column | Prisma field | Type | Null? | Default | Key / Constraint | Description |
 |---|---|---|---|---|---|---|
-| `id` | `id` | text (UUID) | No | `uuid()` | PK | Account id. Generated for now; may become, or be joined to, the auth provider's user id once one is chosen (see TODO.md). |
+| `id` | `id` | text (UUID) | No | `uuid()` | PK | Account id. Should be set to the user's Supabase Auth id (`auth.users.id`) at signup, so the two always match. The `uuid()` default is only a fallback. |
 | `username` | `username` | text | No | — | Unique | Public handle. |
 | `description` | `description` | text | Yes | — | | Profile bio. |
 | `created_at` | `createdAt` | timestamp | No | `now()` | | When the account was created. |
