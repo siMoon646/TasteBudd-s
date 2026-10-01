@@ -1,11 +1,11 @@
-## AI usage
+# AI usage
 Today's work was done with AI assistance: Claude (Anthropic), used through Claude Code in VS Code. Every change was reviewed before it was accepted, and some proposed changes were rejected. Product and design decisions (auth provider, data access approach, MVP scope, module names) were made by the team; the AI explained options and then updated files to match.
 
-### Tool:
+## Tool
 - Claude Code
 
 What the AI did:
-- **Backend scaffold:** created the `routes/`, `controllers/`, `services/`, and `middleware/` stub files listed above, with signatures and comments only.
+- **Backend scaffold:** created stub files in `routes/`, `controllers/`, `services/`, and `middleware/` with function signatures and comments only.
 - **Schema:** added the `body_image` module type at the team's request and updated comments. No other structural changes.
 - **Docs:**
   - Wrote `ARCHITECTURE.md`, moving the existing architecture notes into it and adding new sections on backend layout and Supabase Realtime.
