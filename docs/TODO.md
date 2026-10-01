@@ -90,7 +90,7 @@ Hard delete, no soft deletion. Until built, the schema's `Restrict` rules block 
 
 ### Location-tagged posts
 - [ ] Location module UI
-- [ ] Location module (schema + API) — `location` is already in the `ModuleType` enum
+- [ ] Location module (schema + API) — needs a new `ModuleType` value. Shape: `{ address?, longitude, latitude, label }`
 
 ### Proximity feed
 - [ ] Recency filter
