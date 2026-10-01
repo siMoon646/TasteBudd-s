@@ -14,7 +14,6 @@ enum ModuleType {
   checklist
   numbered_list
   video
-  location
   timer
   body_image
 }
@@ -91,7 +90,6 @@ model PostModule {
   //   checklist:      { items: [{ id, text, checked }] }
   //   numbered_list:  { items: [{ id, text }] }
   //   video:          { video_id: string }                         // YouTube only
-  //   location:       { address?, longitude, latitude, label }
   //   timer:          { hours: 0-99, minutes: 0-59, label? }
   //   body_image:     { url: string, alt? }                         // Cloudinary; inline image, separate from Post.images
   data       Json
