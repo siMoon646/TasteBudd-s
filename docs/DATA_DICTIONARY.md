@@ -240,7 +240,7 @@ In PostgreSQL, NULLs are never equal to each other in a unique constraint. Each 
 **App-enforced rules**
 - Exactly one of `post_id`, `comment_id`, `target_user_id` must be set. (Not enforced by the database. A row with none set would pass every unique constraint. This could be enforced with a `CHECK (num_nonnulls(post_id, comment_id, target_user_id) = 1)` constraint added by hand in a migration.)
 - `type` must be valid for the target: `like` / `dislike` / `save` for posts, `like` / `dislike` for comments, `follow` for users.
-- A user can currently hold both a `like` and a `dislike` on the same post or comment, since the types differ. If votes should be mutually exclusive, the app must remove the opposite vote in the same transaction.
+- A user can currently hold both a `like` and a `dislike` on the same post or comment, since the types differ. Votes should be mutually exclusive, the app must remove the opposite vote in the same transaction.
 - Inserting or deleting a reaction must update the matching `*_count` column on the target post or comment in the same transaction. Follows have no cached count.
 
 ---
