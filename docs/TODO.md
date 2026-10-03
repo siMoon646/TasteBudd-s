@@ -41,6 +41,7 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [x] Decide auth provider — Supabase Auth
 - [ ] Sign up / login (frontend `supabase.auth` → then `POST /api/users` to create the profile row, `User.id` = Supabase auth user id)
 - [ ] Session handling (supabase-js manages/refreshes the session on the frontend; backend verifies the access token on each request in `requireAuth`)
+- [ ] Custom SMTP via Gmail for Supabase Auth emails (Supabase's built-in email service is heavily rate-limited, roughly 2 emails/hour, and only sends to project team members' addresses, so real signups can't get confirmation emails). Needs a Gmail App Password (requires 2FA on the account), entered in Supabase → Authentication → SMTP Settings
 
 ### Moderation
 - [ ] Report/flag post action
@@ -49,8 +50,9 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 
 ### Infrastructure
 - [x] Draft initial Prisma schema (User, Post, PostModule, Comment, Reaction)
-- [ ] Provision Supabase Postgres instance + wire `DATABASE_URL`
-- [ ] Install Prisma Client + run initial migration
+- [x] Provision Supabase Postgres instance + wire `DATABASE_URL` / `DIRECT_URL`
+- [x] Install Prisma Client + run initial migration (Prisma 7)
+- [ ] Create the shared Prisma Client instance for the backend (Prisma 7 needs a driver adapter, e.g. `@prisma/adapter-pg`, pointed at `DATABASE_URL`)
 - [ ] Hosting/deployment (TBD)
 - [x] Repo setup (Git/GitHub org)
 - [x] VITE + React frontend skeleton

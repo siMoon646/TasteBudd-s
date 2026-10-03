@@ -4,6 +4,21 @@ Progress log, newest first.
 
 ---
 
+# 10/02/2026
+
+## Database live on Supabase
+The Supabase Postgres database is provisioned and the initial migration (`20261003001153_init`) is applied, so every table in `schema.prisma` now exists in the shared database. `backend/.env.example` and `frontend/.env.example` list the variables each side needs.
+
+## Supabase client
+Installed `@supabase/supabase-js` in both `backend/` and `frontend/`, ready for the auth work.
+
+## Docs
+- README setup now covers env files, migrations, and Prisma 7 notes.
+- TODO: marked the database and migration items done, added a Prisma Client setup item (Prisma 7 needs a driver adapter) and a Gmail SMTP item for Supabase Auth emails.
+- Data dictionary: reworded the like/dislike rule to state what the app must prevent.
+
+---
+
 # 09/30/2026
 
 ## Modular post schema — done
