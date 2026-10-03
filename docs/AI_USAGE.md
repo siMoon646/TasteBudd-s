@@ -1,5 +1,8 @@
 # AI usage
 
+## 10/03/2026
+- **Docs:** Claude Code updated the Project Board, `TODO.md`, and README status to reflect the frontend pages merged on 10/02 (homepage draft, login/profile stubs).
+
 ## 10/02/2026
 The team did the Prisma 7 upgrade, Supabase setup, and initial migration. Claude Code (Claude, Anthropic) helped with the following, and each change was reviewed before it was accepted.
 

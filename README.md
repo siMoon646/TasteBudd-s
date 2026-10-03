@@ -104,7 +104,7 @@ npm run dev            # Vite dev server, prints the local URL
 
 ## Status
 
-Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, but the backend has only stubbed routes/controllers/services/middleware (no logic yet, not mounted in `server.js`), and the frontend is a stock Vite + React setup. The app itself isn't wired together yet. Bones so bare fr.
+Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, but the backend has only stubbed routes/controllers/services/middleware (no logic yet, not mounted in `server.js`), and the frontend has only a draft homepage layout (search bar + nav buttons) and empty login/profile pages. The app itself isn't wired together yet. Bones so bare fr.
 
 ## Contributors
 
