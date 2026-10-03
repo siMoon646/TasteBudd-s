@@ -36,8 +36,7 @@ Follow-up to the 09/10 WIP entry. The initial Prisma schema (User, Post, PostMod
 ## Backend scaffold
 Stubbed routes, controllers, services, and middleware for the core API (users, posts, comments, reactions, default feed). Signatures and comments only; no logic yet, and `server.js` isn't wired up.
 
-## Team meeting (09/12/2026) — notes TBD
-_Add notes and decisions from the 09/12 meeting here._
+## Team meeting (09/12/2026)
 
 ---
 
