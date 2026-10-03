@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // --- Enums ---------------------------------------------------------------
@@ -14,8 +13,8 @@ enum ModuleType {
   checklist
   numbered_list
   video
-  location
   timer
+  body_image
 }
 
 enum ReactionType {
@@ -28,6 +27,8 @@ enum ReactionType {
 // --- Models ----------------------------------------------------------------
 
 model User {
+  // Set to the Supabase Auth user id (auth.users.id) at signup so the app
+  // user and auth account share one id. The uuid() default is only a fallback.
   id          String      @id @default(uuid())
   username    String      @unique
   description String?
@@ -51,7 +52,7 @@ model Post {
   images    String[]     @default([]) // caption or image required. Validated at app layer, not enforced by the DB.
 
   // Denormalized counts, mirrored from Reaction/Comment rows. Ground truth is
-  // always the Reaction/Comment tables — see README Architecture Notes for
+  // always the Reaction/Comment tables — see docs/ARCHITECTURE.md for
   // the rule on keeping these in sync.
   likeCount    Int @default(0) @map("like_count")
   dislikeCount Int @default(0) @map("dislike_count")
@@ -65,6 +66,7 @@ model Post {
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
+  @@index([userId])
   @@map("posts")
 }
 
@@ -86,12 +88,17 @@ model PostModule {
   //   text:           { body: string }
   //   checklist:      { items: [{ id, text, checked }] }
   //   numbered_list:  { items: [{ id, text }] }
-  //   video:          { video_id: string }                         // YouTube only (MVP)
-  //   location:       { address?, longitude, latitude, label }
+  //   video:          { video_id: string }                         // YouTube only
   //   timer:          { hours: 0-99, minutes: 0-59, label? }
+  //   body_image:     { url: string, alt? }                         // Cloudinary; inline image, separate from Post.images
   data       Json
 
-  @@index([postId, position])
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  // Also serves lookups/ordering by [postId, position] — a unique index
+  // covers that leftmost prefix, so a separate @@index would be redundant.
+  @@unique([postId, position])
   @@map("post_modules")
 }
 
@@ -106,13 +113,15 @@ model Comment {
   image     String?
 
   // Denormalized counts, mirrored from Reaction rows of the matching type —
-  // see README Architecture Notes for the rule on keeping these in sync.
+  // see docs/ARCHITECTURE.md for the rule on keeping these in sync.
   likeCount    Int @default(0) @map("like_count")
   dislikeCount Int @default(0) @map("dislike_count")
 
   reactions Reaction[]
   createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
   @@index([postId])
+  @@index([userId])
   @@map("comments")
 }
 
@@ -130,6 +139,7 @@ model Reaction {
   targetUserId String?      @map("target_user_id")
   targetUser   User?        @relation("ReactionTargetUser", fields: [targetUserId], references: [id], onDelete: Cascade)
   createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
 
   // Each is its own uniqueness check so a user can independently like AND
   // save the same post — only doubling up on the same type is blocked.
@@ -143,5 +153,6 @@ model Reaction {
   // the unique indexes above).
   @@index([postId, type])
   @@index([commentId, type])
+  @@index([targetUserId, type])
   @@map("reactions")
 }
