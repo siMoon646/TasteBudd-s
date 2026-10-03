@@ -7,10 +7,10 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 ## MVP
 
 ### Draft UI Designs
-- [ ] Landing/Login Page
-- [ ] Navbar
+- [ ] Landing/Login Page (`frontend/src/pages/login.jsx` created, still empty)
+- [ ] Navbar (draft buttons + search bar in `frontend/src/pages/homepage.jsx`: Homepage, Messages, Notifications, Saved, Settings)
 - [ ] Pinterest Style x Tinder Feed
-- [ ] Profile Page
+- [ ] Profile Page (`frontend/src/pages/profile.jsx` created, still empty)
 
 ### Documentation
 - [ ] Update inspiration section on README.md

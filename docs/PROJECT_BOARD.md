@@ -12,6 +12,11 @@ The Supabase Postgres database is provisioned and the initial migration (`202610
 ## Supabase client
 Installed `@supabase/supabase-js` in both `backend/` and `frontend/`, ready for the auth work.
 
+## Frontend: first pages
+- Removed the Vite starter content from `App.jsx`; it now renders the login page.
+- Added `pages/homepage.jsx`, a markup draft with a search bar and nav buttons (Homepage, Messages, Notifications, Saved, Settings). It isn't a React component yet and isn't rendered anywhere.
+- Added empty `pages/login.jsx` and `pages/profile.jsx` files to fill in next.
+
 ## Docs
 - README setup now covers env files, migrations, and Prisma 7 notes.
 - TODO: marked the database and migration items done, added a Prisma Client setup item (Prisma 7 needs a driver adapter) and a Gmail SMTP item for Supabase Auth emails.
