@@ -7,7 +7,10 @@ TasteBudd's is built on the idea that food content deserves a different kind of 
 Later on (post-MVP), posts will also be able to carry an optional location tag, powering a dedicated **location-based feed**: using your device's location, browse posts pinned nearby within a range you control.
 
 ## Inspirations
-- TBD...
+- Tinder
+- Twitter
+- Pinterest
+- Instagram
 
 ## Features
 
