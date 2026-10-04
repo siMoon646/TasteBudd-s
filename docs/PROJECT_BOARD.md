@@ -4,6 +4,33 @@ Progress log, newest first.
 
 ---
 
+# 10/04/2026
+
+## Backend connected to the database
+- Added `backend/lib/db.js`, the one shared Prisma Client (Prisma 7 driver adapter `@prisma/adapter-pg` over a `pg` pool on `DATABASE_URL`).
+- `server.js` now has a working test route, `GET /api/users`, which confirms the database connection.
+- Converted every backend stub from CommonJS to ES modules and mounted `routes/index.js` under `/api`. The handlers are still stubs.
+- `npm run dev` from the repo root now starts the backend and the frontend together (`concurrently`).
+
+## Frontend: routing and pages
+- Added React Router. `App.jsx` now routes `/` (landing), `/login`, `/signup`, and `/homepage`.
+- New `pages/landing.jsx`: header with Login and Signup links, plus three placeholder posts rendered through a new `components/Post.jsx`.
+- `pages/login.jsx` and new `pages/signup.jsx` show a heading only. `pages/homepage.jsx` is now a real component.
+
+## Auth: Supabase client
+- Added `frontend/src/supabase.js`, the shared Supabase client for auth. No page uses it yet.
+- Turned on "Confirm email" in the Supabase dashboard. Custom SMTP is still to do, so confirmation emails only reach project team members for now.
+
+## Styling: Tailwind CSS
+Installed Tailwind v4 through the `@tailwindcss/vite` plugin and replaced the Vite starter styles in `index.css` with the Tailwind import. No page uses utility classes yet.
+
+## Docs
+- README: added an Inspirations section (Tinder, Twitter, Pinterest, Instagram), frontend notes, and the updated tech stack and status.
+- Architecture: added a Frontend layout section.
+- TODO: added and ticked off the Supabase client, routing, and Tailwind items.
+
+---
+
 # 10/02/2026
 
 ## Database live on Supabase

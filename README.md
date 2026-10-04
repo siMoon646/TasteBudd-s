@@ -39,7 +39,8 @@ Later on (post-MVP), posts will also be able to carry an optional location tag, 
 
 **Frontend**
 - Vite + React
-- Tailwind CSS (?)
+- React Router (`react-router-dom`, client-side routing)
+- Tailwind CSS v4 (through the `@tailwindcss/vite` plugin)
 
 **Auth**
 - Supabase Auth
@@ -118,7 +119,7 @@ npm run dev            # starts the backend (port 3000) and the frontend (port 5
 
 ## Status
 
-Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`), but the real routes/controllers/services/middleware are still stubs (mounted under `/api` in `server.js`, no logic yet). The frontend has a login page with a heading and a first `Post` component, a draft homepage layout (search bar + nav buttons), and an empty profile page. The app itself isn't wired together yet. Bones so bare fr.
+Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`), but the real routes/controllers/services/middleware are still stubs (mounted under `/api` in `server.js`, no logic yet). The frontend has React Router routes for a landing page (header with Login/Signup links and placeholder posts rendered through the `Post` component), heading-only login and signup pages, a draft homepage layout (search bar + nav buttons), and an empty profile page. Tailwind CSS is installed and a shared Supabase client is set up for auth, but no page uses either yet, and the frontend doesn't call the backend. The app itself isn't wired together yet. Bones so bare fr.
 
 ## Contributors
 
