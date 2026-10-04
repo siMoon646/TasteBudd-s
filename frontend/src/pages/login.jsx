@@ -3,8 +3,8 @@ import Post from "../components/Post";
 function LandingPage(){
     const posts = [
         {username:"Emily", content: "Scallion pancakes are really good"},
-        {username: "Vanna", content: "Today i tried out a california roll for the first time, taste really good, also very cheap, highly recommend"},
-        {username: "Simon", content: "testing"}
+        {username: "Vanna", content: "i had food poisoning from scallion pancakes"},
+        {username: "Simon", content: "me too"}
     ];
     return(
         <div>
