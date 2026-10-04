@@ -82,6 +82,13 @@ cp .env.example .env   # then fill in the values (see below)
 npm run dev            # Vite dev server, prints the local URL
 ```
 
+**Run both at once** (from the repo root, after the two installs above)
+
+```bash
+npm install            # installs concurrently
+npm run dev            # starts the backend (port 3000) and the frontend (port 5173) in one terminal
+```
+
 **Environment variables:** each `.env.example` lists the variables that folder needs. The values come from the Supabase dashboard; ask a teammate if you don't have access. `.env` files are gitignored; never commit them.
 - `backend/.env`: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `DATABASE_URL` (transaction pooler, used by Prisma Client at runtime), `DIRECT_URL` (session pooler, used by migrations)
 - `frontend/.env`: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
@@ -92,7 +99,11 @@ npm run dev            # Vite dev server, prints the local URL
 - The database URL is set in `backend/prisma.config.ts`, not in `schema.prisma`. Prisma 7 rejects a `url` in the `datasource` block.
 - VS Code's Prisma extension can check the schema against Prisma 6 rules. This repo's `.vscode/settings.json` sets `"prisma.pinToPrisma6": false`. If the editor still shows `Argument "url" is missing in data source block "db"`, run **Prisma: Restart Language Server** from the Command Palette.
 
-**Not set up yet:** `backend/server.js` is still empty, so the backend doesn't serve anything yet.
+- Prisma Client needs a driver adapter. `backend/lib/db.js` creates the one shared client using `@prisma/adapter-pg` over a `pg` connection pool pointed at `DATABASE_URL`. Import that instance (`import prisma from './lib/db.js'`) instead of calling `new PrismaClient()` elsewhere.
+
+**Backend modules:** `backend/package.json` sets `"type": "module"`, so backend files use `import`/`export` and relative imports need the file extension (`'./lib/db.js'`).
+
+**Not set up yet:** `backend/server.js` has one working route, `GET /api/users`, a test that returns every row in `users` to confirm the database connection. The real routes are mounted under `/api`, but they are still stubs: each one throws `Not implemented`, so it responds with HTTP 500.
 
 ## Documentation
 
@@ -104,7 +115,7 @@ npm run dev            # Vite dev server, prints the local URL
 
 ## Status
 
-Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, but the backend has only stubbed routes/controllers/services/middleware (no logic yet, not mounted in `server.js`), and the frontend has only a draft homepage layout (search bar + nav buttons) and empty login/profile pages. The app itself isn't wired together yet. Bones so bare fr.
+Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`), but the real routes/controllers/services/middleware are still stubs (mounted under `/api` in `server.js`, no logic yet). The frontend has a login page with a heading and a first `Post` component, a draft homepage layout (search bar + nav buttons), and an empty profile page. The app itself isn't wired together yet. Bones so bare fr.
 
 ## Contributors
 

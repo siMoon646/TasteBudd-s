@@ -31,10 +31,13 @@ Code in `backend/` is split by responsibility:
 
 | Folder | Responsibility |
 |---|---|
-| `routes/` | Maps URLs + HTTP methods to controller functions and attaches middleware. `routes/index.js` combines the resource routers; `server.js` mounts it under `/api` (not wired yet). |
+| `lib/` | Shared setup. `lib/db.js` creates the single Prisma Client (through the `@prisma/adapter-pg` driver adapter and a `pg` connection pool on `DATABASE_URL`) and exports it. Services import this instance; nothing else calls `new PrismaClient()`, so the whole backend shares one pool. |
+| `routes/` | Maps URLs + HTTP methods to controller functions and attaches middleware. `routes/index.js` combines the resource routers; `server.js` mounts it under `/api`. |
 | `controllers/` | HTTP only: reads params/body/`req.user`, calls a service, sends the response and status code. |
 | `services/` | Business rules and all Prisma access: validation, permission checks, transactions, counter updates. |
 | `middleware/` | Cross-cutting request handling: auth (`requireAuth` / `optionalAuth`), validation, 404 and error handling. |
+
+The backend runs as ES modules (`"type": "module"` in `backend/package.json`). Every file uses `import`/`export`, and relative imports include the file extension (`'../middleware/auth.js'`). Routers are default exports; controllers, services, and middleware use named exports. The handlers behind the mounted routes are still stubs that throw `Not implemented`; the only working route is a test one in `server.js`, `GET /api/users`.
 
 ---
 
