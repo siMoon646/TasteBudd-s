@@ -32,7 +32,7 @@ async function adjustPostCommentCount(tx, postId, delta) {
   throw new Error('Not implemented');
 }
 
-module.exports = {
+export {
   adjustPostReactionCount,
   adjustCommentReactionCount,
   adjustPostCommentCount,

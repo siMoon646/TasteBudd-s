@@ -1,7 +1,7 @@
-const express = require('express');
-const { requireAuth, optionalAuth } = require('../middleware/auth');
-const posts = require('../controllers/postController');
-const comments = require('../controllers/commentController');
+import express from 'express';
+import { requireAuth, optionalAuth } from '../middleware/auth.js';
+import * as posts from '../controllers/postController.js';
+import * as comments from '../controllers/commentController.js';
 
 const router = express.Router();
 
@@ -18,4 +18,4 @@ router.delete('/:postId/reactions/:type', requireAuth, posts.removeReaction);
 router.post('/:postId/comments', requireAuth, comments.createComment);
 router.get('/:postId/comments', comments.listComments);
 
-module.exports = router;
+export default router;

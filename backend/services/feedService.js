@@ -21,4 +21,4 @@ async function getDefaultFeed({ cursor, limit = 20, viewerId }) {
   throw new Error('Not implemented');
 }
 
-module.exports = { scorePost, getDefaultFeed };
+export { scorePost, getDefaultFeed };

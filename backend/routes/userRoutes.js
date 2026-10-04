@@ -1,6 +1,6 @@
-const express = require('express');
-const { requireAuth } = require('../middleware/auth');
-const users = require('../controllers/userController');
+import express from 'express';
+import { requireAuth } from '../middleware/auth.js';
+import * as users from '../controllers/userController.js';
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ router.patch('/:userId', requireAuth, users.updateUserProfile);
 router.put('/:userId/follow', requireAuth, users.followUser);
 router.delete('/:userId/follow', requireAuth, users.unfollowUser);
 
-module.exports = router;
+export default router;

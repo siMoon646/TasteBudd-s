@@ -23,4 +23,4 @@ function optionalAuth(req, res, next) {
   throw new Error('Not implemented');
 }
 
-module.exports = { requireAuth, optionalAuth };
+export { requireAuth, optionalAuth };

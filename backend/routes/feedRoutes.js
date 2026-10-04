@@ -1,9 +1,9 @@
-const express = require('express');
-const { optionalAuth } = require('../middleware/auth');
-const feed = require('../controllers/feedController');
+import express from 'express';
+import { optionalAuth } from '../middleware/auth.js';
+import * as feed from '../controllers/feedController.js';
 
 const router = express.Router();
 
 router.get('/', optionalAuth, feed.getDefaultFeed);
 
-module.exports = router;
+export default router;

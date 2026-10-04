@@ -32,4 +32,4 @@ async function updateUserProfile(userId, { username, description }) {
   throw new Error('Not implemented');
 }
 
-module.exports = { createUser, getUserProfile, updateUserProfile };
+export { createUser, getUserProfile, updateUserProfile };

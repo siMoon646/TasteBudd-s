@@ -60,7 +60,7 @@ async function unfollowUser(userId, targetUserId) {
   throw new Error('Not implemented');
 }
 
-module.exports = {
+export {
   addPostReaction,
   removePostReaction,
   addCommentReaction,
