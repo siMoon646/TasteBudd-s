@@ -1,0 +1,28 @@
+{
+  "name": "tastebudds",
+  "version": "1.0.0",
+  "description": "A social media platform centered around food.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently -n backend,frontend \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siMoon646/TasteBudd-s.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/siMoon646/TasteBudd-s/issues"
+  },
+  "homepage": "https://github.com/siMoon646/TasteBudd-s#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
