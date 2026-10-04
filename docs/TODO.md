@@ -39,9 +39,11 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 
 ### Accounts & Auth
 - [x] Decide auth provider — Supabase Auth
+- [x] Set up `frontend/src/supabase.js` for auth (exports one shared `supabase` client via `createClient`, using `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` from `frontend/.env`)
 - [ ] Sign up / login (frontend `supabase.auth` → then `POST /api/users` to create the profile row, `User.id` = Supabase auth user id)
 - [ ] Session handling (supabase-js manages/refreshes the session on the frontend; backend verifies the access token on each request in `requireAuth`)
 - [ ] Custom SMTP via Gmail for Supabase Auth emails (Supabase's built-in email service is heavily rate-limited, roughly 2 emails/hour, and only sends to project team members' addresses, so real signups can't get confirmation emails). Needs a Gmail App Password (requires 2FA on the account), entered in Supabase → Authentication → SMTP Settings
+- [x] Turn on "Confirm email" in the Supabase dashboard (Authentication → Sign In / Providers → Email). Without it, users can sign up with email addresses they don't own. Depends on the custom SMTP task above, since confirmation emails won't reach real signups otherwise
 
 ### Moderation
 - [ ] Report/flag post action
