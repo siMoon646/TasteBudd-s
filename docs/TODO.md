@@ -7,13 +7,13 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 ## MVP
 
 ### Draft UI Designs
-- [ ] Landing/Login Page (`frontend/src/pages/login.jsx` created, still empty)
-- [ ] Navbar (draft buttons + search bar in `frontend/src/pages/homepage.jsx`: Homepage, Messages, Notifications, Saved, Settings)
+- [ ] Landing/Login/Signup Pages (`frontend/src/pages/landing.jsx` has a header with Login/Signup links and placeholder posts; `login.jsx` and `signup.jsx` are routed but only show a heading)
+- [ ] Navbar (draft buttons + search bar in `frontend/src/pages/homepage.jsx`, routed at `/homepage`: Homepage, Messages, Notifications, Saved, Settings)
 - [ ] Pinterest Style x Tinder Feed
-- [ ] Profile Page (`frontend/src/pages/profile.jsx` created, still empty)
+- [ ] Profile Page (`frontend/src/pages/profile.jsx` created, still empty, no route yet)
 
 ### Documentation
-- [ ] Update inspiration section on README.md
+- [x] Update inspiration section on README.md
 - [x] Setup instructions in README.md (update as Prisma/Supabase get wired up)
 
 ### Modular Posts
@@ -58,6 +58,9 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [ ] Hosting/deployment (TBD)
 - [x] Repo setup (Git/GitHub org)
 - [x] VITE + React frontend skeleton
+- [x] Client-side routing with React Router (`/`, `/login`, `/signup`, `/homepage` in `frontend/src/App.jsx`)
+- [x] Tailwind CSS v4 setup (`@tailwindcss/vite` plugin; no page uses utility classes yet)
+- [x] Run backend + frontend together from the repo root (`npm run dev`, via `concurrently`)
 - [x] Node.js + Express backend skeleton
 
 ### Core API — Users, Posts, Comments, Reactions

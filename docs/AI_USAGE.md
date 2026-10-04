@@ -1,5 +1,12 @@
 # AI usage
 
+## 10/04/2026
+Claude Code (Claude, Anthropic) helped with the following, and each change was reviewed before it was accepted. The routing, pages, and Tailwind setup were done by the team.
+
+- **Code:** wrote `frontend/src/supabase.js` (the shared Supabase client). Assisted in testing.
+- **Explanations:** how Supabase invite links work, and which parts of auth belong in the frontend versus the backend.
+- **Docs:** added the Supabase client and "Confirm email" items to `TODO.md`, and updated the README, `ARCHITECTURE.md`, `TODO.md`, the Project Board, and this log to match the 10/04 commits.
+
 ## 10/03/2026
 - **Docs:** Claude Code updated the Project Board, `TODO.md`, and README status to reflect the frontend pages merged on 10/02 (homepage draft, login/profile stubs).
 
