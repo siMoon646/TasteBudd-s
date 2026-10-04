@@ -31,4 +31,4 @@ async function deleteComment(commentId, userId) {
   throw new Error('Not implemented');
 }
 
-module.exports = { createComment, listCommentsByPost, deleteComment };
+export { createComment, listCommentsByPost, deleteComment };

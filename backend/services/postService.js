@@ -55,4 +55,4 @@ async function deletePost(postId, userId) {
   throw new Error('Not implemented');
 }
 
-module.exports = { createPost, getPostById, listPosts, updatePost, deletePost };
+export { createPost, getPostById, listPosts, updatePost, deletePost };

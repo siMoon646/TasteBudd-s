@@ -59,7 +59,7 @@ async function removeReaction(req, res) {
   throw new Error('Not implemented');
 }
 
-module.exports = {
+export {
   createPost,
   listPosts,
   getPost,

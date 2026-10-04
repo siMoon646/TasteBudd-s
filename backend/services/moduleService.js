@@ -29,4 +29,4 @@ function prepareModules(modules) {
   throw new Error('Not implemented');
 }
 
-module.exports = { validateModuleData, prepareModules };
+export { validateModuleData, prepareModules };

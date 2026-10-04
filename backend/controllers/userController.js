@@ -44,7 +44,7 @@ async function unfollowUser(req, res) {
   throw new Error('Not implemented');
 }
 
-module.exports = {
+export {
   createUser,
   getUserProfile,
   updateUserProfile,

@@ -8,4 +8,4 @@ async function getDefaultFeed(req, res) {
   throw new Error('Not implemented');
 }
 
-module.exports = { getDefaultFeed };
+export { getDefaultFeed };
