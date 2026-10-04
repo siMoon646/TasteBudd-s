@@ -1,13 +1,21 @@
+import { Link } from "react-router-dom";
+
+function Home() {
+  return(
     <main>
       <section class = "Search">
-        <input type = "text" placeholder="Search"/>
+      <input type = "text" placeholder="Search"/>
       </section>
 
       <section class = "components">
-        <button>Homepage</button>
-        <button>Messages</button>
-        <button>Notifications</button>
-        <button>Saved</button>
-        <button>Settings</button>
+      <button>Homepage</button>
+      <button>Messages</button>
+      <button>Notifications</button>
+      <button>Saved</button>
+      <button>Settings</button>
       </section>
     </main>
+  );
+}
+
+export default Home;
