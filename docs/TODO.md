@@ -52,14 +52,14 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [x] Draft initial Prisma schema (User, Post, PostModule, Comment, Reaction)
 - [x] Provision Supabase Postgres instance + wire `DATABASE_URL` / `DIRECT_URL`
 - [x] Install Prisma Client + run initial migration (Prisma 7)
-- [ ] Create the shared Prisma Client instance for the backend (Prisma 7 needs a driver adapter, e.g. `@prisma/adapter-pg`, pointed at `DATABASE_URL`)
+- [x] Create the shared Prisma Client instance for the backend (Prisma 7 needs a driver adapter, e.g. `@prisma/adapter-pg`, pointed at `DATABASE_URL`)
 - [ ] Hosting/deployment (TBD)
 - [x] Repo setup (Git/GitHub org)
 - [x] VITE + React frontend skeleton
 - [x] Node.js + Express backend skeleton
 
 ### Core API — Users, Posts, Comments, Reactions
-_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; function signatures are stubbed in `backend/routes`, `controllers`, `services`, and `middleware`, but none of this is implemented yet — `server.js` is still empty)_
+_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; function signatures are stubbed in `backend/routes`, `controllers`, `services`, and `middleware`, but none of this is implemented yet — `server.js` mounts the stubs under `/api`, and its only working route is a test one, `GET /api/users`)_
 - [ ] User
   - [ ] Create (signup, tied to Accounts & Auth above)
   - [ ] Read profile
@@ -78,6 +78,10 @@ _(tracks backend functionality against the models already defined in `backend/pr
   - [ ] Create — follow on a user
   - [ ] Delete (+ decrement matching counter transactionally) — add/remove are idempotent `PUT`/`DELETE`, not a toggle
 - [ ] Cross-cutting
+  - [x] Convert the stubs from CommonJS (`require`/`module.exports`) to ES modules (the backend is now `"type": "module"`), then mount `routes/index.js` under `/api` in `server.js`
+  - [ ] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
+  - [ ] Implement `notFound` and `errorHandler` (both are still stubs in `backend/middleware/errorHandler.js`)
+  - [ ] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
   - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
 
 ---
