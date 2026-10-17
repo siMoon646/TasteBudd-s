@@ -14,6 +14,10 @@ Later on (post-MVP), posts will also be able to carry an optional location tag, 
 
 ## Features
 
+- **Swiping Page** - swipe on users based on food interest
+    - **User's Information** - the face behind the (food) post
+    - **What Food?** - seek out your flavors/desires
+    - **How To Use** - like Tinder, swipe left for 'no' or swipe right for 'yes'
 - **Modular Posts** — build a post from interchangeable blocks:
     - **Text** — freeform body content
     - **Checklist** — ingredient lists or step tracking
