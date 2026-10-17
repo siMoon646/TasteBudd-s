@@ -1,11 +1,11 @@
 import express from 'express';
 import prisma from './lib/db.js';
 import routes from './routes/index.js';
+import { notFound, errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
-// Parse JSON request bodies into req.body (needed by POST/PATCH handlers)
-app.use(express.json());
+app.use(express.json()); // Parse JSON request bodies into req.body (needed by POST/PATCH handlers)
 
 // Example: test the connection
 app.get('/api/users', async (req, res) => {
@@ -14,5 +14,6 @@ app.get('/api/users', async (req, res) => {
 });
 
 app.use('/api', routes);
+app.use(notFound, errorHandler);
 
 app.listen(3000, () => console.log('Server running on port 3000'));
