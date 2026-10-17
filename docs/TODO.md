@@ -85,7 +85,7 @@ _(tracks backend functionality against the models already defined in `backend/pr
 - [ ] Cross-cutting
   - [x] Convert the stubs from CommonJS (`require`/`module.exports`) to ES modules (the backend is now `"type": "module"`), then mount `routes/index.js` under `/api` in `server.js`
   - [ ] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
-  - [ ] Implement `notFound` and `errorHandler` (both are still stubs in `backend/middleware/errorHandler.js`)
+  - [x] Implement `notFound` and `errorHandler`
   - [ ] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
   - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
 
