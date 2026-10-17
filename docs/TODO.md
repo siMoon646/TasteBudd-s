@@ -45,11 +45,6 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [x] Custom SMTP via Gmail for Supabase Auth emails (Supabase's built-in email service is heavily rate-limited, roughly 2 emails/hour, and only sends to project team members' addresses, so real signups can't get confirmation emails). Needs a Gmail App Password (requires 2FA on the account), entered in Supabase → Authentication → SMTP Settings
 - [x] Turn on "Confirm email" in the Supabase dashboard (Authentication → Sign In / Providers → Email). Without it, users can sign up with email addresses they don't own. Depends on the custom SMTP task above, since confirmation emails won't reach real signups otherwise
 
-### Moderation
-- [ ] Report/flag post action
-- [ ] Moderation queue (admin dashboard)
-- [ ] Moderation action logging
-
 ### Infrastructure
 - [x] Draft initial Prisma schema (User, Post, PostModule, Comment, Reaction)
 - [x] Provision Supabase Postgres instance + wire `DATABASE_URL` / `DIRECT_URL`
@@ -112,6 +107,11 @@ Hard delete, no soft deletion. Until built, the schema's `Restrict` rules block 
 ### Rating module
 - [ ] Rating module UI
 - [ ] Rating module (schema + API) — needs a new `ModuleType` value
+
+### Moderation
+- [ ] Report/flag post action
+- [ ] Moderation queue (admin dashboard)
+- [ ] Moderation action logging
 
 ---
 
