@@ -4,6 +4,9 @@ import routes from './routes/index.js';
 
 const app = express();
 
+// Parse JSON request bodies into req.body (needed by POST/PATCH handlers)
+app.use(express.json());
+
 // Example: test the connection
 app.get('/api/users', async (req, res) => {
   const users = await prisma.user.findMany();
