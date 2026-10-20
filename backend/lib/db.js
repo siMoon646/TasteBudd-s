@@ -1,3 +1,7 @@
+// Database client. Sets up the one shared Prisma client, connected to PostgreSQL
+// through a pg connection pool. Import it anywhere the backend needs the database:
+//   import prisma from './lib/db.js';
+
 // Load the variables from backend/.env into process.env (must run before DATABASE_URL is read below)
 import 'dotenv/config';
 // PrismaClient is the query builder used to talk to the database (prisma.user.findMany(), etc.)
