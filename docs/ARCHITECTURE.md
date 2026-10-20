@@ -6,6 +6,8 @@ How TasteBudd's is put together and the rules the code has to follow. For what e
 
 - [Request paths](#request-paths)
 - [Backend layout](#backend-layout)
+  - [Auth middleware](#auth-middleware)
+  - [Error handling](#error-handling)
 - [Frontend layout](#frontend-layout)
 - [Data integrity rules](#data-integrity-rules)
 - [Real-time (Supabase Realtime)](#real-time-supabase-realtime)
@@ -16,7 +18,7 @@ How TasteBudd's is put together and the rules the code has to follow. For what e
 
 - **Reads, writes & business logic** (e.g. constructing a modular post, loading a feed) go through the Node backend via Prisma. Permission checks live in one place: the backend's service layer.
 - **Real-time subscriptions** (e.g. live comment updates) go directly from the frontend to Supabase Realtime. See [Real-time](#real-time-supabase-realtime) below.
-- **Auth** is Supabase Auth. The frontend signs in with supabase-js (the shared client in `frontend/src/supabase.js`) and sends its access token to the backend, which verifies it on each request. `User.id` is set to the Supabase auth user id at signup.
+- **Auth** is Supabase Auth. The frontend signs in with supabase-js (the shared client in `frontend/src/supabase.js`) and sends its access token to the backend as `Authorization: Bearer <jwt>`. The backend verifies it on each request (see [Auth middleware](#auth-middleware)). `User.id` is set to the Supabase auth user id at signup.
 
 ```
 Browser ──HTTP (Bearer token)──> Express ──Prisma──> Postgres (Supabase)
@@ -32,13 +34,38 @@ Code in `backend/` is split by responsibility:
 
 | Folder | Responsibility |
 |---|---|
-| `lib/` | Shared setup. `lib/db.js` creates the single Prisma Client (through the `@prisma/adapter-pg` driver adapter and a `pg` connection pool on `DATABASE_URL`) and exports it. Services import this instance; nothing else calls `new PrismaClient()`, so the whole backend shares one pool. |
+| `lib/` | Shared setup. `lib/db.js` creates the single Prisma Client (through the `@prisma/adapter-pg` driver adapter and a `pg` connection pool on `DATABASE_URL`) and exports it. Services import this instance; nothing else calls `new PrismaClient()`, so the whole backend shares one pool. `lib/supabase.js` creates the single server-side Supabase client from `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (it throws at startup if either is missing). It is only used to verify access tokens, so session storage and auto-refresh are off. |
 | `routes/` | Maps URLs + HTTP methods to controller functions and attaches middleware. `routes/index.js` combines the resource routers; `server.js` mounts it under `/api`. |
 | `controllers/` | HTTP only: reads params/body/`req.user`, calls a service, sends the response and status code. |
 | `services/` | Business rules and all Prisma access: validation, permission checks, transactions, counter updates. |
 | `middleware/` | Cross-cutting request handling: auth (`requireAuth` / `optionalAuth`), validation, 404 and error handling. |
 
-The backend runs as ES modules (`"type": "module"` in `backend/package.json`). Every file uses `import`/`export`, and relative imports include the file extension (`'../middleware/auth.js'`). Routers are default exports; controllers, services, and middleware use named exports. The handlers behind the mounted routes are still stubs that throw `Not implemented`; the only working route is a test one in `server.js`, `GET /api/users`.
+The backend runs as ES modules (`"type": "module"` in `backend/package.json`). Every file uses `import`/`export`, and relative imports include the file extension (`'../middleware/auth.js'`). Routers are default exports; controllers, services, and middleware use named exports. The middleware is implemented, but the controllers and services behind the mounted routes are still stubs that throw `Not implemented`. The only working route is a test one in `server.js`, `GET /api/users`.
+
+`server.js` sets things up in this order: `express.json()` → the test route → `routes/index.js` under `/api` → `notFound` → `errorHandler`.
+
+### Auth middleware
+
+`middleware/auth.js` exports two functions that routes attach as needed:
+
+- **`requireAuth`** reads the Bearer token, verifies it, and sets `req.user = { id, email, username }`. It responds `401` if the token is missing, invalid, or expired.
+- **`optionalAuth`** does the same when a valid token is present and otherwise continues without `req.user`. It's for public reads that show extra info to signed-in users (e.g. whether the viewer liked a post).
+
+How it works:
+
+- Tokens are verified with `supabase.auth.getClaims()`, which checks the JWT signature locally against the project's public keys (fetched once, then cached) instead of calling Supabase on every request. **Tradeoff:** a token stays valid until it expires (1 hour), even after the user signs out.
+- `req.user.id` is the token's `sub` (the Supabase auth user id). `username` is looked up from the `users` table and is `null` until the profile row exists. That's the normal state during signup, between the Supabase sign-up and `POST /api/users`.
+- If Supabase can't be reached (e.g. fetching the public keys fails), the middleware throws a `503` instead of a `401`, so an outage isn't reported to the client as "you're signed out".
+
+### Error handling
+
+`middleware/errorHandler.js` exports `notFound` (any unmatched route → `404 { error: 'Not found' }`) and `errorHandler`. Express 5 forwards errors thrown in async handlers to `errorHandler` automatically, so controllers don't need try/catch. `errorHandler` picks the status in this order:
+
+1. Known Prisma errors: `P2002` (unique constraint) → `409`, `P2003` (foreign key / `Restrict`) → `409`, `P2025` (record not found) → `404`.
+2. `err.status` / `err.statusCode`, set by a service (e.g. `403`) or by `express.json()` (`400` on malformed JSON).
+3. Otherwise `500`.
+
+Responses are `{ error: message }`. Errors with status 500 or higher are logged. In production their message is replaced with `Internal server error`; outside production the stack trace is included.
 
 ---
 
@@ -61,8 +88,11 @@ Code in `frontend/src/`:
 | `/login` | `pages/login.jsx` | Heading only |
 | `/signup` | `pages/signup.jsx` | Heading only |
 | `/homepage` | `pages/homepage.jsx` | Draft search bar and nav buttons |
+| `/auth` | `pages/AuthTest.jsx` | Temporary dev-only panel: sign up, sign in, set password, sign out, and call `POST /api/users` with or without the access token. Delete once the real login page exists. |
 
-`pages/profile.jsx` is an empty file with no route. No page imports the Supabase client or calls the backend yet, and no route is protected.
+`pages/profile.jsx` is an empty file with no route. `AuthTest.jsx` is the only page that uses the Supabase client or calls the backend so far, and no route is protected.
+
+In development, the Vite dev server proxies `/api` to the backend at `http://localhost:3000` (`server.proxy` in `vite.config.js`). The frontend can call `fetch('/api/...')` with no CORS setup.
 
 ---
 

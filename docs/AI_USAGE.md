@@ -1,5 +1,10 @@
 # AI usage
 
+## 10/19/2026
+- **Code:** Claude Code (Claude, Anthropic) wrote the dev-only auth test panel, `frontend/src/pages/AuthTest.jsx` (sign up/in/out, set password, and the `POST /api/users` buttons with and without the token).
+- **Styling:** Microsoft Copilot styled the panel (new markup plus a separate `AuthTest.css`). Claude Code then converted that styling to Tailwind utility classes in `AuthTest.jsx` and deleted `AuthTest.css`, keeping the same look.
+- **Docs:** Claude Code (Claude, Anthropic) updated the README, `ARCHITECTURE.md`, `TODO.md`, the Project Board (10/17 and 10/19 entries), and this log to match the auth middleware, error handling, `/auth` dev panel, and Vite proxy changes. The changes were reviewed before they were accepted.
+
 ## 10/04/2026
 Claude Code (Claude, Anthropic) helped with the following, and each change was reviewed before it was accepted. The routing, pages, and Tailwind setup were done by the team.
 
