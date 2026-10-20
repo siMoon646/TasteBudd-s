@@ -29,6 +29,7 @@ Later on (post-MVP), posts will also be able to carry an optional location tag, 
     - **Location Tag** module — pin a post to a place
     - **Location-Based Feed** — a dedicated tab surfacing nearby posts, with a user-adjustable search radius
     - **Rating** module
+    - **Moderation** — report/flag posts, an admin moderation queue, and logging of moderation actions
 
 ## Tech Stack
 

@@ -42,13 +42,8 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [x] Set up `frontend/src/supabase.js` for auth (exports one shared `supabase` client via `createClient`, using `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` from `frontend/.env`)
 - [ ] Sign up / login (frontend `supabase.auth` → then `POST /api/users` to create the profile row, `User.id` = Supabase auth user id)
 - [ ] Session handling (supabase-js manages/refreshes the session on the frontend; backend verifies the access token on each request in `requireAuth`)
-- [ ] Custom SMTP via Gmail for Supabase Auth emails (Supabase's built-in email service is heavily rate-limited, roughly 2 emails/hour, and only sends to project team members' addresses, so real signups can't get confirmation emails). Needs a Gmail App Password (requires 2FA on the account), entered in Supabase → Authentication → SMTP Settings
+- [x] Custom SMTP via Gmail for Supabase Auth emails (Supabase's built-in email service is heavily rate-limited, roughly 2 emails/hour, and only sends to project team members' addresses, so real signups can't get confirmation emails). Needs a Gmail App Password (requires 2FA on the account), entered in Supabase → Authentication → SMTP Settings
 - [x] Turn on "Confirm email" in the Supabase dashboard (Authentication → Sign In / Providers → Email). Without it, users can sign up with email addresses they don't own. Depends on the custom SMTP task above, since confirmation emails won't reach real signups otherwise
-
-### Moderation
-- [ ] Report/flag post action
-- [ ] Moderation queue (admin dashboard)
-- [ ] Moderation action logging
 
 ### Infrastructure
 - [x] Draft initial Prisma schema (User, Post, PostModule, Comment, Reaction)
@@ -85,7 +80,7 @@ _(tracks backend functionality against the models already defined in `backend/pr
 - [ ] Cross-cutting
   - [x] Convert the stubs from CommonJS (`require`/`module.exports`) to ES modules (the backend is now `"type": "module"`), then mount `routes/index.js` under `/api` in `server.js`
   - [ ] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
-  - [ ] Implement `notFound` and `errorHandler` (both are still stubs in `backend/middleware/errorHandler.js`)
+  - [x] Implement `notFound` and `errorHandler`
   - [ ] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
   - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
 
@@ -112,6 +107,11 @@ Hard delete, no soft deletion. Until built, the schema's `Restrict` rules block 
 ### Rating module
 - [ ] Rating module UI
 - [ ] Rating module (schema + API) — needs a new `ModuleType` value
+
+### Moderation
+- [ ] Report/flag post action
+- [ ] Moderation queue (admin dashboard)
+- [ ] Moderation action logging
 
 ---
 
