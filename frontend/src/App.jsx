@@ -4,6 +4,7 @@ import Landing from "./pages/landing";
 import Home from "./pages/homepage";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
+import AuthTest from "./pages/AuthTest";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path = "/homepage" element = {<Home/>}/>
         <Route path = "/login" element = {<Login/>}/>
         <Route path = "/signup" element = {<Signup/>}/>
+        <Route path = "/auth" element = {<AuthTest/>}/>
       </Routes>
     </BrowserRouter>
   );
