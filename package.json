@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/siMoon646/TasteBudd-s#readme",
   "devDependencies": {
-    "concurrently": "^10.0.5"
+    "concurrently": "^10.0.6"
   }
 }
