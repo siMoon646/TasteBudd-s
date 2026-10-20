@@ -79,9 +79,9 @@ _(tracks backend functionality against the models already defined in `backend/pr
   - [ ] Delete (+ decrement matching counter transactionally) — add/remove are idempotent `PUT`/`DELETE`, not a toggle
 - [ ] Cross-cutting
   - [x] Convert the stubs from CommonJS (`require`/`module.exports`) to ES modules (the backend is now `"type": "module"`), then mount `routes/index.js` under `/api` in `server.js`
-  - [ ] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
+  - [x] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
   - [x] Implement `notFound` and `errorHandler`
-  - [ ] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
+  - [x] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
   - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
 
 ---
