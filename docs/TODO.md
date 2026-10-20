@@ -41,7 +41,10 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [x] Decide auth provider — Supabase Auth
 - [x] Set up `frontend/src/supabase.js` for auth (exports one shared `supabase` client via `createClient`, using `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` from `frontend/.env`)
 - [ ] Sign up / login (frontend `supabase.auth` → then `POST /api/users` to create the profile row, `User.id` = Supabase auth user id)
-- [ ] Session handling (supabase-js manages/refreshes the session on the frontend; backend verifies the access token on each request in `requireAuth`)
+- [ ] Session handling
+  - [x] Backend: verify the access token on each request (`requireAuth` / `optionalAuth` in `backend/middleware/auth.js`, via `supabase.auth.getClaims` and the server client in `backend/lib/supabase.js`)
+  - [ ] Frontend: send `Authorization: Bearer <access_token>` on API calls from the real pages (supabase-js already manages/refreshes the session; only the dev panel at `/auth` does this so far)
+- [ ] Delete the dev-only auth panel (`frontend/src/pages/AuthTest.jsx`, route `/auth`) once the real login/signup pages work
 - [x] Custom SMTP via Gmail for Supabase Auth emails (Supabase's built-in email service is heavily rate-limited, roughly 2 emails/hour, and only sends to project team members' addresses, so real signups can't get confirmation emails). Needs a Gmail App Password (requires 2FA on the account), entered in Supabase → Authentication → SMTP Settings
 - [x] Turn on "Confirm email" in the Supabase dashboard (Authentication → Sign In / Providers → Email). Without it, users can sign up with email addresses they don't own. Depends on the custom SMTP task above, since confirmation emails won't reach real signups otherwise
 
@@ -53,13 +56,14 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [ ] Hosting/deployment (TBD)
 - [x] Repo setup (Git/GitHub org)
 - [x] VITE + React frontend skeleton
-- [x] Client-side routing with React Router (`/`, `/login`, `/signup`, `/homepage` in `frontend/src/App.jsx`)
-- [x] Tailwind CSS v4 setup (`@tailwindcss/vite` plugin; no page uses utility classes yet)
+- [x] Client-side routing with React Router (`/`, `/login`, `/signup`, `/homepage`, plus the temporary `/auth` dev panel, in `frontend/src/App.jsx`)
+- [x] Vite dev proxy: `/api` → `http://localhost:3000` (`frontend/vite.config.js`), so the frontend calls the backend without CORS setup
+- [x] Tailwind CSS v4 setup (`@tailwindcss/vite` plugin; only the `/auth` dev panel uses utility classes so far)
 - [x] Run backend + frontend together from the repo root (`npm run dev`, via `concurrently`)
 - [x] Node.js + Express backend skeleton
 
 ### Core API — Users, Posts, Comments, Reactions
-_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; function signatures are stubbed in `backend/routes`, `controllers`, `services`, and `middleware`, but none of this is implemented yet — `server.js` mounts the stubs under `/api`, and its only working route is a test one, `GET /api/users`)_
+_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; routes are wired up in `backend/routes` and the middleware (auth, errors) works, but the controllers and services are still stubs — `server.js` mounts them under `/api`, and its only working route is a test one, `GET /api/users`)_
 - [ ] User
   - [ ] Create (signup, tied to Accounts & Auth above)
   - [ ] Read profile
@@ -82,6 +86,7 @@ _(tracks backend functionality against the models already defined in `backend/pr
   - [x] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
   - [x] Implement `notFound` and `errorHandler`
   - [x] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
+  - [x] Implement `requireAuth` and `optionalAuth` (see Accounts & Auth above)
   - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
 
 ---

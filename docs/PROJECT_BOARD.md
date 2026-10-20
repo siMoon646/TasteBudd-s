@@ -4,6 +4,36 @@ Progress log, newest first.
 
 ---
 
+# 10/19/2026
+
+## Backend: auth middleware
+- `requireAuth` and `optionalAuth` in `backend/middleware/auth.js` now work. They read `Authorization: Bearer <jwt>`, verify the Supabase access token with `supabase.auth.getClaims()` (checked locally against the project's cached public keys), and set `req.user = { id, email, username }`. A missing or invalid token gets a 401. If Supabase can't be reached, the response is a 503 instead.
+- New `backend/lib/supabase.js`: the shared server-side Supabase client, used only to verify tokens.
+- Routes that need a signed-in user now return 401 without a token. Their controllers are still stubs.
+
+## Frontend: auth test panel
+- `pages/AuthTest.jsx` is now routed at `/auth` and restyled with Tailwind utility classes (the first page to use Tailwind). Besides sign up/in/out and set password, it can call `POST /api/users` with or without the access token, to check the backend's auth end to end. It's dev-only and will be deleted once the real login page exists.
+- The Vite dev server now proxies `/api` to the backend on port 3000.
+
+## Docs
+- Architecture: new Auth middleware and Error handling sections, the `/auth` route, and the Vite proxy.
+- README, TODO: updated status; split session handling into backend (done) and frontend (to do).
+
+---
+
+# 10/17/2026
+
+## Backend: JSON and error handling
+- `server.js` now parses JSON request bodies (`express.json()`) before the `/api` routes, and mounts `notFound` and `errorHandler` after them.
+- `errorHandler` maps common Prisma errors to HTTP statuses (`P2002` → 409, `P2003` → 409, `P2025` → 404) and uses `err.status` when a service sets one. Errors come back as `{ error }`. Server-error details are hidden in production.
+
+## Scope
+- Moderation (report/flag, admin queue, action logging) moved from MVP to post-MVP.
+- README: Swiping Page added to Features.
+- TODO: marked custom SMTP for Supabase Auth emails as done.
+
+---
+
 # 10/04/2026
 
 ## Backend connected to the database

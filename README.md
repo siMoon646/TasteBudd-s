@@ -98,8 +98,10 @@ npm install            # installs concurrently
 npm run dev            # starts the backend (port 3000) and the frontend (port 5173) in one terminal
 ```
 
+The Vite dev server proxies `/api` to the backend on port 3000, so the frontend can call `fetch('/api/...')` directly. The backend has to be running for those calls to work.
+
 **Environment variables:** each `.env.example` lists the variables that folder needs. The values come from the Supabase dashboard; ask a teammate if you don't have access. `.env` files are gitignored; never commit them.
-- `backend/.env`: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `DATABASE_URL` (transaction pooler, used by Prisma Client at runtime), `DIRECT_URL` (session pooler, used by migrations)
+- `backend/.env`: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` (used to verify access tokens; the backend won't start without them), `DATABASE_URL` (transaction pooler, used by Prisma Client at runtime), `DIRECT_URL` (session pooler, used by migrations)
 - `frontend/.env`: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
 
 **Database:** the shared Supabase database is already migrated, so you don't need to run anything to start working. When you change `schema.prisma`, run `npx prisma migrate dev --name <change>` from `backend/` and commit the new folder in `prisma/migrations/`. `npx prisma migrate status` shows whether the database is up to date.
@@ -112,7 +114,9 @@ npm run dev            # starts the backend (port 3000) and the frontend (port 5
 
 **Backend modules:** `backend/package.json` sets `"type": "module"`, so backend files use `import`/`export` and relative imports need the file extension (`'./lib/db.js'`).
 
-**Not set up yet:** `backend/server.js` has one working route, `GET /api/users`, a test that returns every row in `users` to confirm the database connection. The real routes are mounted under `/api`, but they are still stubs: each one throws `Not implemented`, so it responds with HTTP 500.
+**Not set up yet:** `backend/server.js` has one working route, `GET /api/users`, a test that returns every row in `users` to confirm the database connection. The real routes are mounted under `/api`, and their middleware works: routes that need a signed-in user return 401 without a valid Supabase access token, and errors come back as JSON. The controllers behind them are still stubs that throw `Not implemented`, so a request that gets past auth gets HTTP 500.
+
+**Testing auth:** open `/auth` in the frontend (a temporary dev panel) to sign up, sign in, and call `POST /api/users` with or without your access token. With a token you should get a 500 (`Not implemented`); without one, a 401.
 
 ## Documentation
 
@@ -124,7 +128,7 @@ npm run dev            # starts the backend (port 3000) and the frontend (port 5
 
 ## Status
 
-Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`), but the real routes/controllers/services/middleware are still stubs (mounted under `/api` in `server.js`, no logic yet). The frontend has React Router routes for a landing page (header with Login/Signup links and placeholder posts rendered through the `Post` component), heading-only login and signup pages, a draft homepage layout (search bar + nav buttons), and an empty profile page. Tailwind CSS is installed and a shared Supabase client is set up for auth, but no page uses either yet, and the frontend doesn't call the backend. The app itself isn't wired together yet. Bones so bare fr.
+Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`). The middleware now works: JSON body parsing, 404/error handling, and Supabase access-token auth (`requireAuth` / `optionalAuth`). The controllers and services behind the `/api` routes are still stubs. The frontend has React Router routes for a landing page (header with Login/Signup links and placeholder posts rendered through the `Post` component), heading-only login and signup pages, a draft homepage layout (search bar + nav buttons), and an empty profile page. The only page that uses the Supabase client, calls the backend, or is styled with Tailwind so far is a temporary dev panel at `/auth`. The app itself isn't wired together yet. Bones so bare fr.
 
 ## Contributors
 
