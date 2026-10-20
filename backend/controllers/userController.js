@@ -1,6 +1,9 @@
 // HTTP handlers for users. Controllers only translate between HTTP and the
 // service layer: read params/body/req.user, call a service, send a response.
 
+import * as userService from '../services/userService.js';
+
+
 /**
  * POST /api/users
  * Signup — creates the app user for the authenticated account.
@@ -8,7 +11,17 @@
  * 201 with the created user.
  */
 async function createUser(req, res) {
-  throw new Error('Not implemented');
+  // requireAuth sets username to null until the profile row exists
+  if (req.user.username !== null) {
+    return res.status(409).json({ error: 'Profile already exists' });
+  }
+
+  // following line is shorthand for 
+  // const username = req.body.username; 
+  // const description = req.body.description;
+  const { username, description } = req.body ?? {};
+  const user = await userService.createUser({ id: req.user.id, username, description });
+  res.status(201).json(user);
 }
 
 /**

@@ -29,7 +29,7 @@ enum ReactionType {
 model User {
   // Set to the Supabase Auth user id (auth.users.id) at signup so the app
   // user and auth account share one id. The uuid() default is only a fallback.
-  id          String      @id @default(uuid())
+  id          String      @id
   username    String      @unique
   description String?
   posts       Post[]

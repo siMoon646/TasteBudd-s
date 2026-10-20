@@ -2,6 +2,15 @@
 // there's intentionally no deleteUser here (see docs/ARCHITECTURE.md →
 // Data integrity rules).
 
+import prisma from '../lib/db.js';
+
+/** Builds an error that errorHandler turns into this HTTP status. */
+function httpError(status, message) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
 /**
  * Creates the app user row at signup.
  * - Called after Supabase Auth creates the account; `id` is the Supabase
@@ -10,7 +19,21 @@
  * Returns the created user.
  */
 async function createUser({ id, username, description }) {
-  throw new Error('Not implemented');
+  // Basic checks until Zod validation (middleware/validate.js) is set up
+  if (typeof username !== 'string' || !username.trim()) {
+    throw httpError(400, 'username is required');
+  }
+  if (description != null && typeof description !== 'string') {
+    throw httpError(400, 'description must be a string');
+  }
+
+  return prisma.user.create({
+    data: {
+      id: id,
+      username: username.trim(),
+      description: description?.trim() || null, // store blank bios as null
+    },
+  });
 }
 
 /**
