@@ -29,7 +29,12 @@ async function createUser(req, res) {
  * 200 with the public profile, 404 if not found.
  */
 async function getUserProfile(req, res) {
-  throw new Error('Not implemented');
+  const userId = req.params.userId;
+  const profile = await userService.getUserProfile(userId);
+  if (profile === null) {
+    return res.status(404).json({error: 'Profile doesn\'t exist'});
+  }
+  res.status(200).json(profile);
 }
 
 /**

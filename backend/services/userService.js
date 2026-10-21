@@ -43,7 +43,45 @@ async function createUser({ id, username, description }) {
  * since follows have no cached counter).
  */
 async function getUserProfile(userId) {
-  throw new Error('Not implemented');
+  // userId is invalid:
+  if (typeof userId !== 'string' || !userId.trim()){
+    // the controller will check for 'falsey' (null) value and send a 404
+    return null;
+  }
+
+  // finds a user with userId and specified fields (id, username, description, and createdAt)
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, username: true, description: true, createdAt: true },
+  });
+
+  // Legal id finds a null user -> return null -> controller will see falsey value and send a 404
+  if (!user) {
+    return null;
+  }
+  
+  // Counts the number of rows in the reaction table where the reaction type is 'follow' targeting the specified user.
+  const followerCount = await prisma.reaction.count({
+    where: { type: 'follow', targetUserId: userId },
+  });
+  // Counts the number of rows in the reactio ntable where the reaction type is 'follow' originating FROM the specified user.
+  const followingCount = await prisma.reaction.count({
+    where: { type: 'follow', userId: userId },
+  });
+
+  // copies the user object from the earlier prisma query into the return object:
+  return { ...user, followerCount, followingCount };
+  // return statement equivalent to: 
+  /*
+        return {
+        id: '<exampleId>>',
+        username: 'sampleUser',
+        description: 'sampleDescription',
+        createdAt: '2026-10-21',
+        followerCount: 24,
+        followingCount: 12,
+        };
+   */
 }
 
 /**
