@@ -3,13 +3,7 @@
 // Data integrity rules).
 
 import prisma from '../lib/db.js';
-
-/** Builds an error that errorHandler turns into this HTTP status. */
-function httpError(status, message) {
-  const err = new Error(message);
-  err.status = status;
-  return err;
-}
+import httpError from '../lib/httpError.js';
 
 /**
  * Creates the app user row at signup.

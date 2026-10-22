@@ -58,7 +58,10 @@ async function updateUserProfile(req, res) {
  * Follow :userId as req.user. 204.
  */
 async function followUser(req, res) {
-  throw new Error('Not implemented');
+  // creating the follow reaction
+  await reactionService.followUser(req.user.id, req.params.userId);
+  // sets the status code to 204 - no content - then ends the response
+  res.status(204).end();
 }
 
 /**
