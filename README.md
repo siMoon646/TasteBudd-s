@@ -114,9 +114,9 @@ The Vite dev server proxies `/api` to the backend on port 3000, so the frontend 
 
 **Backend modules:** `backend/package.json` sets `"type": "module"`, so backend files use `import`/`export` and relative imports need the file extension (`'./lib/db.js'`).
 
-**Not set up yet:** `backend/server.js` has one working route, `GET /api/users`, a test that returns every row in `users` to confirm the database connection. The real routes are mounted under `/api`, and their middleware works: routes that need a signed-in user return 401 without a valid Supabase access token, and errors come back as JSON. The controllers behind them are still stubs that throw `Not implemented`, so a request that gets past auth gets HTTP 500.
+**Not set up yet:** `backend/server.js` has one working route, `GET /api/users`, a test that returns every row in `users` to confirm the database connection. The real routes are mounted under `/api`, and their middleware works: routes that need a signed-in user return 401 without a valid Supabase access token, and errors come back as JSON. The user routes work (signup, profile read/update, follow/unfollow). The post, comment, and feed controllers are still stubs that throw `Not implemented`, so a request to them that gets past auth gets HTTP 500.
 
-**Testing auth:** open `/auth` in the frontend (a temporary dev panel) to sign up, sign in, and call `POST /api/users` with or without your access token. With a token you should get a 500 (`Not implemented`); without one, a 401.
+**Testing auth:** open `/auth` in the frontend (a temporary dev panel) to sign up, sign in, and call `POST /api/users` with or without your access token. With a token you should get a 201 with the new profile (or a 409 if it already exists); without one, a 401.
 
 ## Documentation
 
@@ -128,7 +128,7 @@ The Vite dev server proxies `/api` to the backend on port 3000, so the frontend 
 
 ## Status
 
-Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`). The middleware now works: JSON body parsing, 404/error handling, and Supabase access-token auth (`requireAuth` / `optionalAuth`). The controllers and services behind the `/api` routes are still stubs. The frontend has React Router routes for a landing page (header with Login/Signup links and placeholder posts rendered through the `Post` component), heading-only login and signup pages, a draft homepage layout (search bar + nav buttons), and an empty profile page. The only page that uses the Supabase client, calls the backend, or is styled with Tailwind so far is a temporary dev panel at `/auth`. The app itself isn't wired together yet. Bones so bare fr.
+Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`). The middleware now works: JSON body parsing, 404/error handling, and Supabase access-token auth (`requireAuth` / `optionalAuth`). The user API is implemented (signup, profile read/update, follow/unfollow); posts, comments, and the feed are still stubs. The frontend has React Router routes for a landing page (header with Login/Signup links and placeholder posts rendered through the `Post` component), heading-only login and signup pages, a draft homepage layout (search bar + nav buttons), and an empty profile page. The only page that uses the Supabase client, calls the backend, or is styled with Tailwind so far is a temporary dev panel at `/auth`. The app itself isn't wired together yet. Bones so bare fr.
 
 ## Contributors
 
