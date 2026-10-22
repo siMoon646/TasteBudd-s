@@ -1,5 +1,7 @@
 // Post data access + business rules.
 
+import httpError from '../lib/httpError.js';
+
 /**
  * Creates a post with its modules in one nested Prisma create.
  * - Require a non-empty `caption` or at least one entry in `images`

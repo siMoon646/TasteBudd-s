@@ -1,5 +1,7 @@
 // Comment data access + business rules.
 
+import httpError from '../lib/httpError.js';
+
 /**
  * Creates a comment on a post.
  * - Require `text` or `image` (at least one non-null).

@@ -9,6 +9,10 @@
 // both a like and a dislike on the same target. If votes should be mutually
 // exclusive, adding one should also remove the other in the same transaction.
 
+import { Prisma } from "@prisma/client";
+import prisma from "../lib/db.js";
+import httpError from "../lib/httpError.js";
+
 /**
  * Adds a like/dislike/save to a post.
  * - Reject any other `type` with 400. Throw 404 if the post doesn't exist.
@@ -50,14 +54,39 @@ async function removeCommentReaction(userId, commentId, type) {
  * - No counter to update (follows aren't cached).
  */
 async function followUser(userId, targetUserId) {
-  throw new Error('Not implemented');
+  if(userId === targetUserId){
+    throw httpError(400, 'self-follow not allowed');
+  }
+  try {
+    await prisma.reaction.create({
+      data: {
+        type: 'follow',
+        userId: userId,
+        targetUserId: targetUserId,
+      },
+    });
+  } catch (err) {
+    if (err.code === 'P2003') {
+      throw httpError(404, 'target user nonexistent');
+    } else if (err.code === 'P2002') { // P2002 -> unique constraint violation -> treat it as success
+      return;
+    } else {
+      throw err;
+    }
+  }
 }
 
 /**
  * Unfollows a user: delete the matching 'follow' Reaction if it exists.
  */
 async function unfollowUser(userId, targetUserId) {
-  throw new Error('Not implemented');
+  await prisma.reaction.deleteMany({
+    where: {
+      type: 'follow',
+      userId: userId,
+      targetUserId: targetUserId, 
+    },
+  });
 }
 
 export {

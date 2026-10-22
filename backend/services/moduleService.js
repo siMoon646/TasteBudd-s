@@ -10,6 +10,8 @@
 //   timer:          { hours: 0-99, minutes: 0-59, label? }
 //   body_image:     { url: string, alt? }                 // Cloudinary
 
+import httpError from '../lib/httpError.js';
+
 /**
  * Validates one module's `data` against the shape for its `moduleType`.
  * Returns the parsed data, or throws a 400-status error describing what's wrong.
