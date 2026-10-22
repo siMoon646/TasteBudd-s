@@ -4,6 +4,22 @@ Progress log, newest first.
 
 ---
 
+# 10/21/2026
+
+## Backend: user API
+- `GET /api/users/:userId` returns a public profile (`id`, `username`, `description`, `createdAt`) plus `followerCount` and `followingCount`, counted from `follow` reactions. Returns 404 if the user doesn't exist. Tested with a Prisma Studio user: 200 and 404 both work.
+- `PATCH /api/users/:userId` updates `username` and/or `description`. Returns 403 unless the requester owns the profile, 400 on invalid fields, and 409 if the username is taken. Fields left out of the body aren't changed, and a blank description clears the bio.
+- `PUT` / `DELETE /api/users/:userId/follow` follow and unfollow a user. Both are idempotent: following twice or unfollowing someone you don't follow still succeeds (204). Following yourself is a 400, and following a user who doesn't exist is a 404.
+- PATCH and follow/unfollow need a real Supabase access token, so they haven't been tested end to end yet.
+
+## Backend: shared error helper
+- Moved `httpError(status, message)` from `userService.js` to `backend/lib/httpError.js`. Every service now imports it.
+
+## Docs
+- TODO, Architecture, README: updated status for the user API and documented `lib/httpError.js`.
+
+---
+
 # 10/19/2026
 
 ## Backend: auth middleware

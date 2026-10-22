@@ -1,5 +1,13 @@
 # AI usage
 
+## 10/21/2026
+The user API code (`getUserProfile`, `updateUserProfile`, `followUser`, `unfollowUser`, and their controllers) was written by the team. Claude Code (Claude, Anthropic) was used as a tutor and reviewer.
+
+- **Explanations:** JavaScript concepts (falsy values, `??`, `?.`, spread, ternaries, operator precedence, `try/catch` with `await`), Express (`req.params`, `res.status().end()`, response headers), Prisma queries and error codes (`P2002`, `P2003`, `P2025`), and `req.user.id` vs. the `:userId` route param.
+- **Review:** checked each function and its comments, pointed out bugs and suggested fixes, and gave hints instead of full solutions for most of it. It wrote out the final `getUserProfile` service code after a hint-based attempt.
+- **Code:** moved the `httpError` helper to `backend/lib/httpError.js`, added its import to every service, and rewrote one comment in `userService.js`.
+- **Docs:** updated `TODO.md`, `ARCHITECTURE.md`, the README, the Project Board (10/21 entry), and this log. The changes were reviewed before they were accepted.
+
 ## 10/19/2026
 - **Code:** Claude Code (Claude, Anthropic) wrote the dev-only auth test panel, `frontend/src/pages/AuthTest.jsx` (sign up/in/out, set password, and the `POST /api/users` buttons with and without the token).
 - **Styling:** Microsoft Copilot styled the panel (new markup plus a separate `AuthTest.css`). Claude Code then converted that styling to Tailwind utility classes in `AuthTest.jsx` and deleted `AuthTest.css`, keeping the same look.

@@ -34,13 +34,13 @@ Code in `backend/` is split by responsibility:
 
 | Folder | Responsibility |
 |---|---|
-| `lib/` | Shared setup. `lib/db.js` creates the single Prisma Client (through the `@prisma/adapter-pg` driver adapter and a `pg` connection pool on `DATABASE_URL`) and exports it. Services import this instance; nothing else calls `new PrismaClient()`, so the whole backend shares one pool. `lib/supabase.js` creates the single server-side Supabase client from `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (it throws at startup if either is missing). It is only used to verify access tokens, so session storage and auto-refresh are off. |
+| `lib/` | Shared setup. `lib/db.js` creates the single Prisma Client (through the `@prisma/adapter-pg` driver adapter and a `pg` connection pool on `DATABASE_URL`) and exports it. Services import this instance; nothing else calls `new PrismaClient()`, so the whole backend shares one pool. `lib/supabase.js` creates the single server-side Supabase client from `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (it throws at startup if either is missing). It is only used to verify access tokens, so session storage and auto-refresh are off. `lib/httpError.js` default-exports `httpError(status, message)`, which builds an `Error` with `status` set; services throw it and `errorHandler` sends that status. |
 | `routes/` | Maps URLs + HTTP methods to controller functions and attaches middleware. `routes/index.js` combines the resource routers; `server.js` mounts it under `/api`. |
 | `controllers/` | HTTP only: reads params/body/`req.user`, calls a service, sends the response and status code. |
 | `services/` | Business rules and all Prisma access: validation, permission checks, transactions, counter updates. |
 | `middleware/` | Cross-cutting request handling: auth (`requireAuth` / `optionalAuth`), validation, 404 and error handling. |
 
-The backend runs as ES modules (`"type": "module"` in `backend/package.json`). Every file uses `import`/`export`, and relative imports include the file extension (`'../middleware/auth.js'`). Routers are default exports; controllers, services, and middleware use named exports. The middleware is implemented, but the controllers and services behind the mounted routes are still stubs that throw `Not implemented`. The only working route is a test one in `server.js`, `GET /api/users`.
+The backend runs as ES modules (`"type": "module"` in `backend/package.json`). Every file uses `import`/`export`, and relative imports include the file extension (`'../middleware/auth.js'`). Routers are default exports; controllers, services, and middleware use named exports. The middleware is implemented, and so are the user routes (`routes/userRoutes.js`: signup, profile read/update, follow/unfollow). The post, comment, and feed routes, and post/comment reactions, are still stubs that throw `Not implemented`. `server.js` also keeps a test route, `GET /api/users`, that lists every user.
 
 `server.js` sets things up in this order: `express.json()` → the test route → `routes/index.js` under `/api` → `notFound` → `errorHandler`.
 
@@ -62,7 +62,9 @@ How it works:
 `middleware/errorHandler.js` exports `notFound` (any unmatched route → `404 { error: 'Not found' }`) and `errorHandler`. Express 5 forwards errors thrown in async handlers to `errorHandler` automatically, so controllers don't need try/catch. `errorHandler` picks the status in this order:
 
 1. Known Prisma errors: `P2002` (unique constraint) → `409`, `P2003` (foreign key / `Restrict`) → `409`, `P2025` (record not found) → `404`.
-2. `err.status` / `err.statusCode`, set by a service (e.g. `403`) or by `express.json()` (`400` on malformed JSON).
+2. `err.status` / `err.statusCode`, set by a service via `httpError(status, message)` from `lib/httpError.js` (e.g. `400`, `404`) or by `express.json()` (`400` on malformed JSON).
+
+Services let these Prisma errors pass through by default and only catch one when it needs a different meaning. For example, `followUser` turns `P2003` into a `404` (target user doesn't exist) and treats `P2002` (already following) as success.
 3. Otherwise `500`.
 
 Responses are `{ error: message }`. Errors with status 500 or higher are logged. In production their message is replaced with `Internal server error`; outside production the stack trace is included.

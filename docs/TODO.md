@@ -63,11 +63,11 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [x] Node.js + Express backend skeleton
 
 ### Core API — Users, Posts, Comments, Reactions
-_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; routes are wired up in `backend/routes` and the middleware (auth, errors) works, but the controllers and services are still stubs — `server.js` mounts them under `/api`, and its only working route is a test one, `GET /api/users`)_
-- [ ] User
-  - [ ] Create (signup, tied to Accounts & Auth above)
-  - [ ] Read profile
-  - [ ] Update profile (`username`, `description`)
+_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; routes are wired up in `backend/routes` and mounted under `/api` by `server.js`, and the middleware (auth, errors) works. The user routes and follows are implemented; posts, comments, and post/comment reactions are still stubs)_
+- [x] User
+  - [x] Create — `POST /api/users` (backend done; the frontend signup flow is tracked under Accounts & Auth above)
+  - [x] Read profile — `GET /api/users/:userId` (public; includes follower/following counts). Tested: 200 and 404
+  - [x] Update profile (`username`, `description`) — `PATCH /api/users/:userId` (403 unless it's your own profile). Not tested end to end yet: needs a real Supabase access token
 - [ ] Post
   - [ ] Create (caption/images + attached `PostModule[]`)
   - [ ] Read (single post + list/feed queries)
@@ -79,14 +79,15 @@ _(tracks backend functionality against the models already defined in `backend/pr
   - [ ] Delete (+ decrement `Post.commentCount` in the same transaction)
 - [ ] Reaction
   - [ ] Create — like/dislike/save on a post or comment (+ increment matching counter transactionally)
-  - [ ] Create — follow on a user
-  - [ ] Delete (+ decrement matching counter transactionally) — add/remove are idempotent `PUT`/`DELETE`, not a toggle
+  - [x] Follow / unfollow a user — `PUT` / `DELETE /api/users/:userId/follow` (idempotent; 400 on self-follow, 404 if the target doesn't exist; no counter). Not tested end to end yet: needs a real access token
+  - [ ] Delete like/dislike/save (+ decrement matching counter transactionally) — add/remove are idempotent `PUT`/`DELETE`, not a toggle
 - [ ] Cross-cutting
   - [x] Convert the stubs from CommonJS (`require`/`module.exports`) to ES modules (the backend is now `"type": "module"`), then mount `routes/index.js` under `/api` in `server.js`
   - [x] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
   - [x] Implement `notFound` and `errorHandler`
   - [x] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
   - [x] Implement `requireAuth` and `optionalAuth` (see Accounts & Auth above)
+  - [x] Shared `httpError(status, message)` helper in `backend/lib/httpError.js`, imported by every service
   - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
 
 ---
