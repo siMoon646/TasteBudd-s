@@ -2,7 +2,7 @@
 // service layer: read params/body/req.user, call a service, send a response.
 
 import * as userService from '../services/userService.js';
-
+import * as reactionService from '../services/reactionService.js';
 
 /**
  * POST /api/users
@@ -69,7 +69,8 @@ async function followUser(req, res) {
  * Unfollow :userId as req.user. 204.
  */
 async function unfollowUser(req, res) {
-  throw new Error('Not implemented');
+  await reactionService.unfollowUser(req.user.id, req.params.userId);
+  res.status(204).end();
 }
 
 export {

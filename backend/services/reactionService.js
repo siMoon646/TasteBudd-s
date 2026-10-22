@@ -80,7 +80,13 @@ async function followUser(userId, targetUserId) {
  * Unfollows a user: delete the matching 'follow' Reaction if it exists.
  */
 async function unfollowUser(userId, targetUserId) {
-  throw new Error('Not implemented');
+  await prisma.reaction.deleteMany({
+    where: {
+      type: 'follow',
+      userId: userId,
+      targetUserId: targetUserId, 
+    },
+  });
 }
 
 export {
