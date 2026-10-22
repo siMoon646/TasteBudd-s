@@ -90,7 +90,33 @@ async function getUserProfile(userId) {
  * Returns the updated user.
  */
 async function updateUserProfile(userId, { username, description }) {
-  throw new Error('Not implemented');
+  // if the username is undefined -> proceed -> not modifying username
+  // if the username is defined, and is not a string -> throw error
+  // if username is trimmed and comes up empty, then username is illegal -> throw error
+  if (username !== undefined && (typeof username !== 'string' || !username.trim())) {
+    throw httpError(400, 'username must be a string');
+  }
+
+  // description is undefined or null -> skip check (undefined = don't modify, null = clear bio)
+  // description is defined, and is not a string -> throw error
+  if (description != null && typeof description !== 'string') {
+    throw httpError(400, 'description must be a string');
+  }
+
+  return prisma.user.update({
+    // modifying data for username and bio only
+    data: {
+      username: username?.trim(),
+      // description undefined -> do not modify
+      // description is not undefined, but is falsy -> null (clear bio)
+      // description non-blank -> modify bio to new bio
+      description: description === undefined ? undefined : description?.trim() || null,
+    }, 
+    // modifying row with specified id
+    where: {
+      id: userId,
+    },
+  });
 }
 
 export { createUser, getUserProfile, updateUserProfile };

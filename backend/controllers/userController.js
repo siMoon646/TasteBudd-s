@@ -43,7 +43,14 @@ async function getUserProfile(req, res) {
  * 403 unless req.user.id === :userId. 200 with the updated user.
  */
 async function updateUserProfile(req, res) {
-  throw new Error('Not implemented');
+  if (req.user.id !== req.params.userId){
+    return res.status(403).json({error: 'forbidden'});
+  }
+  const userId = req.params.userId;
+  const { username, description } = req.body ?? {};
+  // taken username: Prisma throws P2002 (unique constraint fails) -> errorHandler sends 409
+  const updatedUserProfile = await userService.updateUserProfile(userId, { username, description });
+  res.status(200).json(updatedUserProfile);
 }
 
 /**
