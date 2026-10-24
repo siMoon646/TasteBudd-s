@@ -1,5 +1,13 @@
 # AI usage
 
+## 10/23/2026
+The `createPost` and `listPosts` services and controllers were written by the team, with Claude Code (Claude, Anthropic) as a tutor and reviewer.
+
+- **Explanations:** what happens without `await` (a Promise serializes to `{}`, unhandled rejections), HTTP 400 vs. 422, optional chaining (`?.`), why `?? {}` is used before destructuring, De Morgan's law in validation checks, `req.query` (values are always strings), cursor pagination, Prisma `take` / `cursor` / `skip` / `include` / `select`, module scope, and why calling `getPostById` per post would cause N+1 queries.
+- **Review:** checked each version of both functions and their comments, pointed out bugs, and suggested fixes.
+- **Code:** suggested corrected code that the team pasted in: the reordered validation checks in `createPost`, the `listPosts` controller, and the final `listPosts` service function with its comments.
+- **Docs:** updated `TODO.md`, `ARCHITECTURE.md`, the README, the Project Board (10/23 entry), and this log.
+
 ## 10/21/2026
 The user API code (`getUserProfile`, `updateUserProfile`, `followUser`, `unfollowUser`, and their controllers) was written by the team. Claude Code (Claude, Anthropic) was used as a tutor and reviewer.
 
