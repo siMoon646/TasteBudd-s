@@ -4,6 +4,19 @@ Progress log, newest first.
 
 ---
 
+# 10/23/2026
+
+## Backend: posts (create + list)
+- `POST /api/posts` creates a post for the signed-in user. It needs a non-blank `caption` or at least one image. A `caption` that isn't a string, or `images` that isn't an array of strings, gets a 400. Returns 201 with the post and its modules, ordered by position.
+- Modules aren't supported yet: `moduleService.prepareModules` is still a stub, so a request that sends `modules` fails.
+- `GET /api/posts` lists posts newest first, with cursor pagination. Query: `userId` (only that user's posts), `cursor` (the id of the last post from the previous page), and `limit` (1-50, default 20). Returns `{ posts, nextCursor }`, with `nextCursor` null on the last page. Each post includes its author's `id` and `username`.
+- Neither route has been tested yet.
+
+## Docs
+- TODO, Architecture, README: updated status for post create and list.
+
+---
+
 # 10/21/2026
 
 ## Backend: user API

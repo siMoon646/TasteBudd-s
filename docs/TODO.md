@@ -63,14 +63,16 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [x] Node.js + Express backend skeleton
 
 ### Core API — Users, Posts, Comments, Reactions
-_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; routes are wired up in `backend/routes` and mounted under `/api` by `server.js`, and the middleware (auth, errors) works. The user routes and follows are implemented; posts, comments, and post/comment reactions are still stubs)_
+_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; routes are wired up in `backend/routes` and mounted under `/api` by `server.js`, and the middleware (auth, errors) works. The user routes and follows are implemented, and so are post create and list; the rest of posts, comments, and post/comment reactions are still stubs)_
 - [x] User
   - [x] Create — `POST /api/users` (backend done; the frontend signup flow is tracked under Accounts & Auth above)
   - [x] Read profile — `GET /api/users/:userId` (public; includes follower/following counts). Tested: 200 and 404
   - [x] Update profile (`username`, `description`) — `PATCH /api/users/:userId` (403 unless it's your own profile). Not tested end to end yet: needs a real Supabase access token
 - [ ] Post
-  - [ ] Create (caption/images + attached `PostModule[]`)
+  - [ ] Create (caption/images + attached `PostModule[]`) — `POST /api/posts` works for caption/images (400 if both are empty or the wrong type). Modules wait on `moduleService.prepareModules`. Not tested yet
   - [ ] Read (single post + list/feed queries)
+    - [x] List — `GET /api/posts?userId=&cursor=&limit=` (newest first, cursor pagination, includes author `id`/`username`; `limit` 1-50, default 20). Not tested yet
+    - [ ] Single post — `GET /api/posts/:postId`
   - [ ] Update (caption/images/modules)
   - [ ] Delete (relies on schema-level `onDelete: Cascade` for modules/comments/reactions)
 - [ ] Comment
