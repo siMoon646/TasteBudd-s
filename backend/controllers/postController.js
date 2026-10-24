@@ -19,7 +19,10 @@ async function createPost(req, res) {
  * 200 with { posts, nextCursor }.
  */
 async function listPosts(req, res) {
-  throw new Error('Not implemented');
+  const { userId, cursor } = req.query ?? {};
+  const limit = req.query.limit !== undefined ? Number(req.query.limit) : undefined;
+  const result = await postService.listPosts({ userId, cursor, limit });
+  res.status(200).json(result);
 }
 
 /**

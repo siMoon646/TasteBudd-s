@@ -4,6 +4,11 @@ import * as moduleService from './moduleService.js';
 import prisma from '../lib/db.js';
 import httpError from '../lib/httpError.js';
 
+// feed cards: just the author. Used in `createPost`, `getPostById`, and `updatePost`
+const postPreviewInclude = {
+  user: { select: { id: true, username: true } },
+};
+
 /**
  * Creates a post with its modules in one nested Prisma create.
  * - Require a non-empty `caption` or at least one entry in `images`
@@ -57,8 +62,53 @@ async function getPostById(postId, viewerId) {
  * Returns `{ posts, nextCursor }` (`nextCursor` null on the last page).
  */
 async function listPosts({ userId, cursor, limit = 20 }) {
-  throw new Error('Not implemented');
+  // query params come from the URL, so reject anything that isn't the expected
+  // type (e.g. ?userId=a&userId=b arrives as an array)
+  if (userId !== undefined && typeof userId !== 'string') {
+    throw httpError(400, 'provided userId must be string');
+  }
+  if (cursor !== undefined && typeof cursor !== 'string') {
+    throw httpError(400, 'provided cursor must be string');
+  }
+  // limit defaults to 20. Must be at least 1: with 0, hasMore can be true
+  // while posts is empty, and reading the last post's id below would crash
+  if (!Number.isInteger(limit) || limit < 1 || limit > 50) {
+    throw httpError(400, 'limit must be an integer from 1 to 50');
+  }
+
+  const query = {
+    // a profile page passes userId; the feed leaves it out to get everyone's posts
+    where: { userId: userId ? userId : undefined },
+
+    // author info for the feed card; only the fields the UI needs
+    include: { user: { select: { id: true, username: true } } },
+
+    // id breaks ties between posts with the same createdAt, so the order
+    // never changes between requests and the cursor can't skip or repeat posts
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+
+    // one extra row tells us whether another page exists
+    take: limit + 1,
+  };
+
+  // after the first page, start at the cursor post (the last one the client
+  // already has) and skip it so it isn't sent twice
+  if (cursor) {
+    query.cursor = { id: cursor };
+    query.skip = 1;
+  }
+
+  const rows = await prisma.post.findMany(query);
+
+  // getting the extra row back means at least one more post exists after this page
+  const hasMore = rows.length > limit;
+  // drop the extra row; it will be the first post of the next page
+  const posts = hasMore ? rows.slice(0, limit) : rows;
+  // the client sends this back as `cursor` for the next page; null means last page
+  const nextCursor = hasMore ? posts[posts.length - 1].id : null;
+  return { posts, nextCursor };
 }
+
 
 /**
  * Updates a post's caption, images, and/or modules.
