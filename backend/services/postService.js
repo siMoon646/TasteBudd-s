@@ -1,5 +1,7 @@
 // Post data access + business rules.
 
+import * as moduleService from './moduleService.js';
+import prisma from '../lib/db.js';
 import httpError from '../lib/httpError.js';
 
 /**
@@ -10,7 +12,31 @@ import httpError from '../lib/httpError.js';
  * Returns the created post including its modules ordered by position.
  */
 async function createPost(userId, { caption, images, modules }) {
-  throw new Error('Not implemented');
+  // type checks first, so .trim() below only ever runs on a string
+  if (caption !== undefined && typeof caption !== 'string') {
+    throw httpError(400, 'caption must be a string');
+  }
+  // if images were sent, make sure that they are an array, and that array contains only strings
+  if (images !== undefined && (!Array.isArray(images) || !images.every(item => typeof item === 'string'))) {
+    throw httpError(400, 'images must be an array of strings');
+  }
+  // app-level check to make sure at least one caption or image is present
+  // by this point, we would know that any captions are strings, and any images are arrays containing only strings
+  if (!caption?.trim() && !images?.length) {
+    throw httpError(400, 'post needs a caption or at least one image');
+  }
+  const post = await prisma.post.create({
+    data: {
+      userId : userId,
+      caption : caption?.trim() ? caption : undefined,
+      images : images ? images : undefined,
+      modules: modules ? { create: moduleService.prepareModules(modules) } : undefined,
+    },
+    include : {
+      modules : { orderBy : { position: 'asc'}}
+    }
+  }); 
+  return post;
 }
 
 /**

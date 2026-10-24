@@ -1,12 +1,16 @@
 // HTTP handlers for posts and post reactions.
 
+import * as postService from '../services/postService.js'
+
 /**
  * POST /api/posts
  * Body: { caption?, images?, modules: [{ moduleType, position?, data }] }.
  * 201 with the created post.
  */
 async function createPost(req, res) {
-  throw new Error('Not implemented');
+  const { caption, images, modules } = req.body ?? {};
+  const post = await postService.createPost(req.user.id, { caption, images, modules});
+  res.status(201).json(post);
 }
 
 /**
