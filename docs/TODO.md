@@ -7,13 +7,13 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 ## MVP
 
 ### Draft UI Designs
-- [ ] Landing/Login Page (`frontend/src/pages/login.jsx` created, still empty)
-- [ ] Navbar (draft buttons + search bar in `frontend/src/pages/homepage.jsx`: Homepage, Messages, Notifications, Saved, Settings)
+- [ ] Landing/Login/Signup Pages (`frontend/src/pages/landing.jsx` has a header with Login/Signup links and placeholder posts; `login.jsx` and `signup.jsx` are routed but only show a heading)
+- [ ] Navbar (draft buttons + search bar in `frontend/src/pages/homepage.jsx`, routed at `/homepage`: Homepage, Messages, Notifications, Saved, Settings)
 - [ ] Pinterest Style x Tinder Feed
-- [ ] Profile Page (`frontend/src/pages/profile.jsx` created, still empty)
+- [ ] Profile Page (`frontend/src/pages/profile.jsx` created, still empty, no route yet)
 
 ### Documentation
-- [ ] Update inspiration section on README.md
+- [x] Update inspiration section on README.md
 - [x] Setup instructions in README.md (update as Prisma/Supabase get wired up)
 
 ### Modular Posts
@@ -39,14 +39,14 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 
 ### Accounts & Auth
 - [x] Decide auth provider — Supabase Auth
+- [x] Set up `frontend/src/supabase.js` for auth (exports one shared `supabase` client via `createClient`, using `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` from `frontend/.env`)
 - [ ] Sign up / login (frontend `supabase.auth` → then `POST /api/users` to create the profile row, `User.id` = Supabase auth user id)
-- [ ] Session handling (supabase-js manages/refreshes the session on the frontend; backend verifies the access token on each request in `requireAuth`)
-- [ ] Custom SMTP via Gmail for Supabase Auth emails (Supabase's built-in email service is heavily rate-limited, roughly 2 emails/hour, and only sends to project team members' addresses, so real signups can't get confirmation emails). Needs a Gmail App Password (requires 2FA on the account), entered in Supabase → Authentication → SMTP Settings
-
-### Moderation
-- [ ] Report/flag post action
-- [ ] Moderation queue (admin dashboard)
-- [ ] Moderation action logging
+- [ ] Session handling
+  - [x] Backend: verify the access token on each request (`requireAuth` / `optionalAuth` in `backend/middleware/auth.js`, via `supabase.auth.getClaims` and the server client in `backend/lib/supabase.js`)
+  - [ ] Frontend: send `Authorization: Bearer <access_token>` on API calls from the real pages (supabase-js already manages/refreshes the session; only the dev panel at `/auth` does this so far)
+- [ ] Delete the dev-only auth panel (`frontend/src/pages/AuthTest.jsx`, route `/auth`) once the real login/signup pages work
+- [x] Custom SMTP via Gmail for Supabase Auth emails (Supabase's built-in email service is heavily rate-limited, roughly 2 emails/hour, and only sends to project team members' addresses, so real signups can't get confirmation emails). Needs a Gmail App Password (requires 2FA on the account), entered in Supabase → Authentication → SMTP Settings
+- [x] Turn on "Confirm email" in the Supabase dashboard (Authentication → Sign In / Providers → Email). Without it, users can sign up with email addresses they don't own. Depends on the custom SMTP task above, since confirmation emails won't reach real signups otherwise
 
 ### Infrastructure
 - [x] Draft initial Prisma schema (User, Post, PostModule, Comment, Reaction)
@@ -56,17 +56,23 @@ Organized by stage: [MVP](#mvp) → [Post-MVP](#post-mvp) → [MDP](#mdp--polish
 - [ ] Hosting/deployment (TBD)
 - [x] Repo setup (Git/GitHub org)
 - [x] VITE + React frontend skeleton
+- [x] Client-side routing with React Router (`/`, `/login`, `/signup`, `/homepage`, plus the temporary `/auth` dev panel, in `frontend/src/App.jsx`)
+- [x] Vite dev proxy: `/api` → `http://localhost:3000` (`frontend/vite.config.js`), so the frontend calls the backend without CORS setup
+- [x] Tailwind CSS v4 setup (`@tailwindcss/vite` plugin; only the `/auth` dev panel uses utility classes so far)
+- [x] Run backend + frontend together from the repo root (`npm run dev`, via `concurrently`)
 - [x] Node.js + Express backend skeleton
 
 ### Core API — Users, Posts, Comments, Reactions
-_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; function signatures are stubbed in `backend/routes`, `controllers`, `services`, and `middleware`, but none of this is implemented yet — `server.js` mounts the stubs under `/api`, and its only working route is a test one, `GET /api/users`)_
-- [ ] User
-  - [ ] Create (signup, tied to Accounts & Auth above)
-  - [ ] Read profile
-  - [ ] Update profile (`username`, `description`)
+_(tracks backend functionality against the models already defined in `backend/prisma/schema.prisma`; routes are wired up in `backend/routes` and mounted under `/api` by `server.js`, and the middleware (auth, errors) works. The user routes and follows are implemented, and so are post create and list; the rest of posts, comments, and post/comment reactions are still stubs)_
+- [x] User
+  - [x] Create — `POST /api/users` (backend done; the frontend signup flow is tracked under Accounts & Auth above)
+  - [x] Read profile — `GET /api/users/:userId` (public; includes follower/following counts). Tested: 200 and 404
+  - [x] Update profile (`username`, `description`) — `PATCH /api/users/:userId` (403 unless it's your own profile). Not tested end to end yet: needs a real Supabase access token
 - [ ] Post
-  - [ ] Create (caption/images + attached `PostModule[]`)
+  - [ ] Create (caption/images + attached `PostModule[]`) — `POST /api/posts` works for caption/images (400 if both are empty or the wrong type). Modules wait on `moduleService.prepareModules`. Not tested yet
   - [ ] Read (single post + list/feed queries)
+    - [x] List — `GET /api/posts?userId=&cursor=&limit=` (newest first, cursor pagination, includes author `id`/`username`; `limit` 1-50, default 20). Not tested yet
+    - [ ] Single post — `GET /api/posts/:postId`
   - [ ] Update (caption/images/modules)
   - [ ] Delete (relies on schema-level `onDelete: Cascade` for modules/comments/reactions)
 - [ ] Comment
@@ -75,13 +81,15 @@ _(tracks backend functionality against the models already defined in `backend/pr
   - [ ] Delete (+ decrement `Post.commentCount` in the same transaction)
 - [ ] Reaction
   - [ ] Create — like/dislike/save on a post or comment (+ increment matching counter transactionally)
-  - [ ] Create — follow on a user
-  - [ ] Delete (+ decrement matching counter transactionally) — add/remove are idempotent `PUT`/`DELETE`, not a toggle
+  - [x] Follow / unfollow a user — `PUT` / `DELETE /api/users/:userId/follow` (idempotent; 400 on self-follow, 404 if the target doesn't exist; no counter). Not tested end to end yet: needs a real access token
+  - [ ] Delete like/dislike/save (+ decrement matching counter transactionally) — add/remove are idempotent `PUT`/`DELETE`, not a toggle
 - [ ] Cross-cutting
   - [x] Convert the stubs from CommonJS (`require`/`module.exports`) to ES modules (the backend is now `"type": "module"`), then mount `routes/index.js` under `/api` in `server.js`
-  - [ ] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
-  - [ ] Implement `notFound` and `errorHandler` (both are still stubs in `backend/middleware/errorHandler.js`)
-  - [ ] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
+  - [x] Add `express.json()` to `server.js`, before the `/api` routes (POST/PATCH handlers can't read a request body without it)
+  - [x] Implement `notFound` and `errorHandler`
+  - [x] Mount `notFound` and `errorHandler` in `server.js`, after the `/api` routes (`notFound` first, `errorHandler` last)
+  - [x] Implement `requireAuth` and `optionalAuth` (see Accounts & Auth above)
+  - [x] Shared `httpError(status, message)` helper in `backend/lib/httpError.js`, imported by every service
   - [ ] Shared counter-sync helper functions (take a Prisma `tx` client so they compose into larger transactions)
 
 ---
@@ -107,6 +115,11 @@ Hard delete, no soft deletion. Until built, the schema's `Restrict` rules block 
 ### Rating module
 - [ ] Rating module UI
 - [ ] Rating module (schema + API) — needs a new `ModuleType` value
+
+### Moderation
+- [ ] Report/flag post action
+- [ ] Moderation queue (admin dashboard)
+- [ ] Moderation action logging
 
 ---
 

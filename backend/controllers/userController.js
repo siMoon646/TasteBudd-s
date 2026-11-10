@@ -1,6 +1,9 @@
 // HTTP handlers for users. Controllers only translate between HTTP and the
 // service layer: read params/body/req.user, call a service, send a response.
 
+import * as userService from '../services/userService.js';
+import * as reactionService from '../services/reactionService.js';
+
 /**
  * POST /api/users
  * Signup — creates the app user for the authenticated account.
@@ -8,7 +11,17 @@
  * 201 with the created user.
  */
 async function createUser(req, res) {
-  throw new Error('Not implemented');
+  // requireAuth sets username to null until the profile row exists
+  if (req.user.username !== null) {
+    return res.status(409).json({ error: 'Profile already exists' });
+  }
+
+  // following line is shorthand for 
+  // const username = req.body.username; 
+  // const description = req.body.description;
+  const { username, description } = req.body ?? {};
+  const user = await userService.createUser({ id: req.user.id, username, description });
+  res.status(201).json(user);
 }
 
 /**
@@ -16,7 +29,12 @@ async function createUser(req, res) {
  * 200 with the public profile, 404 if not found.
  */
 async function getUserProfile(req, res) {
-  throw new Error('Not implemented');
+  const userId = req.params.userId;
+  const profile = await userService.getUserProfile(userId);
+  if (profile === null) {
+    return res.status(404).json({error: 'Profile doesn\'t exist'});
+  }
+  res.status(200).json(profile);
 }
 
 /**
@@ -25,7 +43,14 @@ async function getUserProfile(req, res) {
  * 403 unless req.user.id === :userId. 200 with the updated user.
  */
 async function updateUserProfile(req, res) {
-  throw new Error('Not implemented');
+  if (req.user.id !== req.params.userId){
+    return res.status(403).json({error: 'forbidden'});
+  }
+  const userId = req.params.userId;
+  const { username, description } = req.body ?? {};
+  // taken username: Prisma throws P2002 (unique constraint fails) -> errorHandler sends 409
+  const updatedUserProfile = await userService.updateUserProfile(userId, { username, description });
+  res.status(200).json(updatedUserProfile);
 }
 
 /**
@@ -33,7 +58,10 @@ async function updateUserProfile(req, res) {
  * Follow :userId as req.user. 204.
  */
 async function followUser(req, res) {
-  throw new Error('Not implemented');
+  // creating the follow reaction
+  await reactionService.followUser(req.user.id, req.params.userId);
+  // sets the status code to 204 - no content - then ends the response
+  res.status(204).end();
 }
 
 /**
@@ -41,7 +69,8 @@ async function followUser(req, res) {
  * Unfollow :userId as req.user. 204.
  */
 async function unfollowUser(req, res) {
-  throw new Error('Not implemented');
+  await reactionService.unfollowUser(req.user.id, req.params.userId);
+  res.status(204).end();
 }
 
 export {

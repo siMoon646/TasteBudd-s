@@ -1,5 +1,7 @@
 // Feed queries (docs/TODO.md → Feed).
 
+import httpError from '../lib/httpError.js';
+
 /**
  * Engagement score for ranking the default feed.
  * Weights likes, comments, saves, and follows-from-post (weights TBD);

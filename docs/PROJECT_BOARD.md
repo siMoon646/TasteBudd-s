@@ -4,6 +4,92 @@ Progress log, newest first.
 
 ---
 
+# 10/23/2026
+
+## Backend: posts (create + list)
+- `POST /api/posts` creates a post for the signed-in user. It needs a non-blank `caption` or at least one image. A `caption` that isn't a string, or `images` that isn't an array of strings, gets a 400. Returns 201 with the post and its modules, ordered by position.
+- Modules aren't supported yet: `moduleService.prepareModules` is still a stub, so a request that sends `modules` fails.
+- `GET /api/posts` lists posts newest first, with cursor pagination. Query: `userId` (only that user's posts), `cursor` (the id of the last post from the previous page), and `limit` (1-50, default 20). Returns `{ posts, nextCursor }`, with `nextCursor` null on the last page. Each post includes its author's `id` and `username`.
+- Neither route has been tested yet.
+
+## Docs
+- TODO, Architecture, README: updated status for post create and list.
+
+---
+
+# 10/21/2026
+
+## Backend: user API
+- `GET /api/users/:userId` returns a public profile (`id`, `username`, `description`, `createdAt`) plus `followerCount` and `followingCount`, counted from `follow` reactions. Returns 404 if the user doesn't exist. Tested with a Prisma Studio user: 200 and 404 both work.
+- `PATCH /api/users/:userId` updates `username` and/or `description`. Returns 403 unless the requester owns the profile, 400 on invalid fields, and 409 if the username is taken. Fields left out of the body aren't changed, and a blank description clears the bio.
+- `PUT` / `DELETE /api/users/:userId/follow` follow and unfollow a user. Both are idempotent: following twice or unfollowing someone you don't follow still succeeds (204). Following yourself is a 400, and following a user who doesn't exist is a 404.
+- PATCH and follow/unfollow need a real Supabase access token, so they haven't been tested end to end yet.
+
+## Backend: shared error helper
+- Moved `httpError(status, message)` from `userService.js` to `backend/lib/httpError.js`. Every service now imports it.
+
+## Docs
+- TODO, Architecture, README: updated status for the user API and documented `lib/httpError.js`.
+
+---
+
+# 10/19/2026
+
+## Backend: auth middleware
+- `requireAuth` and `optionalAuth` in `backend/middleware/auth.js` now work. They read `Authorization: Bearer <jwt>`, verify the Supabase access token with `supabase.auth.getClaims()` (checked locally against the project's cached public keys), and set `req.user = { id, email, username }`. A missing or invalid token gets a 401. If Supabase can't be reached, the response is a 503 instead.
+- New `backend/lib/supabase.js`: the shared server-side Supabase client, used only to verify tokens.
+- Routes that need a signed-in user now return 401 without a token. Their controllers are still stubs.
+
+## Frontend: auth test panel
+- `pages/AuthTest.jsx` is now routed at `/auth` and restyled with Tailwind utility classes (the first page to use Tailwind). Besides sign up/in/out and set password, it can call `POST /api/users` with or without the access token, to check the backend's auth end to end. It's dev-only and will be deleted once the real login page exists.
+- The Vite dev server now proxies `/api` to the backend on port 3000.
+
+## Docs
+- Architecture: new Auth middleware and Error handling sections, the `/auth` route, and the Vite proxy.
+- README, TODO: updated status; split session handling into backend (done) and frontend (to do).
+
+---
+
+# 10/17/2026
+
+## Backend: JSON and error handling
+- `server.js` now parses JSON request bodies (`express.json()`) before the `/api` routes, and mounts `notFound` and `errorHandler` after them.
+- `errorHandler` maps common Prisma errors to HTTP statuses (`P2002` → 409, `P2003` → 409, `P2025` → 404) and uses `err.status` when a service sets one. Errors come back as `{ error }`. Server-error details are hidden in production.
+
+## Scope
+- Moderation (report/flag, admin queue, action logging) moved from MVP to post-MVP.
+- README: Swiping Page added to Features.
+- TODO: marked custom SMTP for Supabase Auth emails as done.
+
+---
+
+# 10/04/2026
+
+## Backend connected to the database
+- Added `backend/lib/db.js`, the one shared Prisma Client (Prisma 7 driver adapter `@prisma/adapter-pg` over a `pg` pool on `DATABASE_URL`).
+- `server.js` now has a working test route, `GET /api/users`, which confirms the database connection.
+- Converted every backend stub from CommonJS to ES modules and mounted `routes/index.js` under `/api`. The handlers are still stubs.
+- `npm run dev` from the repo root now starts the backend and the frontend together (`concurrently`).
+
+## Frontend: routing and pages
+- Added React Router. `App.jsx` now routes `/` (landing), `/login`, `/signup`, and `/homepage`.
+- New `pages/landing.jsx`: header with Login and Signup links, plus three placeholder posts rendered through a new `components/Post.jsx`.
+- `pages/login.jsx` and new `pages/signup.jsx` show a heading only. `pages/homepage.jsx` is now a real component.
+
+## Auth: Supabase client
+- Added `frontend/src/supabase.js`, the shared Supabase client for auth. No page uses it yet.
+- Turned on "Confirm email" in the Supabase dashboard. Custom SMTP is still to do, so confirmation emails only reach project team members for now.
+
+## Styling: Tailwind CSS
+Installed Tailwind v4 through the `@tailwindcss/vite` plugin and replaced the Vite starter styles in `index.css` with the Tailwind import. No page uses utility classes yet.
+
+## Docs
+- README: added an Inspirations section (Tinder, Twitter, Pinterest, Instagram), frontend notes, and the updated tech stack and status.
+- Architecture: added a Frontend layout section.
+- TODO: added and ticked off the Supabase client, routing, and Tailwind items.
+
+---
+
 # 10/02/2026
 
 ## Database live on Supabase

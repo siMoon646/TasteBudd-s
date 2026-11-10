@@ -5,6 +5,8 @@
 // together with the Reaction/Comment row write. See docs/ARCHITECTURE.md →
 // Data integrity rules: a counter change must never commit without its source row change.
 
+import httpError from '../lib/httpError.js';
+
 /**
  * Adjusts one of a post's reaction counters by `delta` (+1 or -1).
  * - `type` is a ReactionType valid on posts: 'like' → likeCount,

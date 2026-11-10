@@ -14,6 +14,10 @@ Later on (post-MVP), posts will also be able to carry an optional location tag, 
 
 ## Features
 
+- **Swiping Page** - swipe on users based on food interest
+    - **User's Information** - the face behind the (food) post
+    - **What Food?** - seek out your flavors/desires
+    - **How To Use** - like Tinder, swipe left for 'no' or swipe right for 'yes'
 - **Modular Posts** — build a post from interchangeable blocks:
     - **Text** — freeform body content
     - **Checklist** — ingredient lists or step tracking
@@ -25,6 +29,7 @@ Later on (post-MVP), posts will also be able to carry an optional location tag, 
     - **Location Tag** module — pin a post to a place
     - **Location-Based Feed** — a dedicated tab surfacing nearby posts, with a user-adjustable search radius
     - **Rating** module
+    - **Moderation** — report/flag posts, an admin moderation queue, and logging of moderation actions
 
 ## Tech Stack
 
@@ -39,7 +44,8 @@ Later on (post-MVP), posts will also be able to carry an optional location tag, 
 
 **Frontend**
 - Vite + React
-- Tailwind CSS (?)
+- React Router (`react-router-dom`, client-side routing)
+- Tailwind CSS v4 (through the `@tailwindcss/vite` plugin)
 
 **Auth**
 - Supabase Auth
@@ -92,8 +98,10 @@ npm install            # installs concurrently
 npm run dev            # starts the backend (port 3000) and the frontend (port 5173) in one terminal
 ```
 
+The Vite dev server proxies `/api` to the backend on port 3000, so the frontend can call `fetch('/api/...')` directly. The backend has to be running for those calls to work.
+
 **Environment variables:** each `.env.example` lists the variables that folder needs. The values come from the Supabase dashboard; ask a teammate if you don't have access. `.env` files are gitignored; never commit them.
-- `backend/.env`: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `DATABASE_URL` (transaction pooler, used by Prisma Client at runtime), `DIRECT_URL` (session pooler, used by migrations)
+- `backend/.env`: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` (used to verify access tokens; the backend won't start without them), `DATABASE_URL` (transaction pooler, used by Prisma Client at runtime), `DIRECT_URL` (session pooler, used by migrations)
 - `frontend/.env`: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
 
 **Database:** the shared Supabase database is already migrated, so you don't need to run anything to start working. When you change `schema.prisma`, run `npx prisma migrate dev --name <change>` from `backend/` and commit the new folder in `prisma/migrations/`. `npx prisma migrate status` shows whether the database is up to date.
@@ -106,7 +114,9 @@ npm run dev            # starts the backend (port 3000) and the frontend (port 5
 
 **Backend modules:** `backend/package.json` sets `"type": "module"`, so backend files use `import`/`export` and relative imports need the file extension (`'./lib/db.js'`).
 
-**Not set up yet:** `backend/server.js` has one working route, `GET /api/users`, a test that returns every row in `users` to confirm the database connection. The real routes are mounted under `/api`, but they are still stubs: each one throws `Not implemented`, so it responds with HTTP 500.
+**Not set up yet:** `backend/server.js` has one working route, `GET /api/users`, a test that returns every row in `users` to confirm the database connection. The real routes are mounted under `/api`, and their middleware works: routes that need a signed-in user return 401 without a valid Supabase access token, and errors come back as JSON. The user routes work (signup, profile read/update, follow/unfollow). Two post routes are written but not tested yet: `POST /api/posts` (create) and `GET /api/posts` (list). Creating a post with modules still fails because `moduleService.prepareModules` is a stub. The other post routes and the comment and feed controllers are still stubs that throw `Not implemented`, so a request to them that gets past auth gets HTTP 500.
+
+**Testing auth:** open `/auth` in the frontend (a temporary dev panel) to sign up, sign in, and call `POST /api/users` with or without your access token. With a token you should get a 201 with the new profile (or a 409 if it already exists); without one, a 401.
 
 ## Documentation
 
@@ -118,7 +128,7 @@ npm run dev            # starts the backend (port 3000) and the frontend (port 5
 
 ## Status
 
-Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`), but the real routes/controllers/services/middleware are still stubs (mounted under `/api` in `server.js`, no logic yet). The frontend has a login page with a heading and a first `Post` component, a draft homepage layout (search bar + nav buttons), and an empty profile page. The app itself isn't wired together yet. Bones so bare fr.
+Early scaffold — the Supabase database is provisioned and the initial Prisma migration is applied, and the backend starts and can query it through a shared Prisma Client (one test route, `GET /api/users`). The middleware now works: JSON body parsing, 404/error handling, and Supabase access-token auth (`requireAuth` / `optionalAuth`). The user API is implemented (signup, profile read/update, follow/unfollow). Creating and listing posts is written but untested; the rest of the post API, comments, and the feed are still stubs. The frontend has React Router routes for a landing page (header with Login/Signup links and placeholder posts rendered through the `Post` component), heading-only login and signup pages, a draft homepage layout (search bar + nav buttons), and an empty profile page. The only page that uses the Supabase client, calls the backend, or is styled with Tailwind so far is a temporary dev panel at `/auth`. The app itself isn't wired together yet. Bones so bare fr.
 
 ## Contributors
 
