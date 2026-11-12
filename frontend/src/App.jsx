@@ -8,7 +8,8 @@ import AuthTest from "./pages/AuthTest";
 
 function App() {
   return (
-    <BrowserRouter>
+    <main className="min-h-screen w-full bg-[#E85D5D]">
+      <BrowserRouter>
       <Routes>
         <Route path = "/" element = {<Landing/>}/>
         <Route path = "/homepage" element = {<Home/>}/>
@@ -17,6 +18,7 @@ function App() {
         <Route path = "/auth" element = {<AuthTest/>}/>
       </Routes>
     </BrowserRouter>
+    </main>
   );
 }
 
